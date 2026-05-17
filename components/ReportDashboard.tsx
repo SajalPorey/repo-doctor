@@ -8,6 +8,60 @@ import CheckList, { type DisplayCheck } from "@/components/CheckList";
 import ScoreCard from "@/components/ScoreCard";
 import SuggestionCard from "@/components/SuggestionCard";
 import type { ScanResponse } from "@/types/scan";
+import type { RepoType, TechStack, MaturityLevel } from "@/lib/detector";
+
+const REPO_TYPE_LABELS: Record<RepoType, string> = {
+  library: "📦 Library",
+  "web-app": "🌐 Web App",
+  "cli-tool": "⌨️ CLI Tool",
+  research: "🔬 Research",
+  monorepo: "🏗 Monorepo",
+  "docs-only": "📄 Docs",
+  unknown: "📁 Unknown",
+};
+
+const STACK_LABELS: Record<TechStack, string> = {
+  typescript: "🟦 TypeScript",
+  javascript: "🟨 JavaScript",
+  python: "🐍 Python",
+  go: "🐹 Go",
+  rust: "🦀 Rust",
+  java: "☕ Java",
+  ruby: "💎 Ruby",
+  other: "📝 Other",
+};
+
+const MATURITY_LABELS: Record<MaturityLevel, string> = {
+  production: "🚀 Production",
+  growing: "📈 Growing",
+  hobby: "🌱 Hobby",
+};
+
+function ContextBadge({
+  label,
+  color,
+  title,
+}: {
+  label: string;
+  color: "violet" | "blue" | "emerald" | "amber" | "zinc";
+  title?: string;
+}) {
+  const colorMap = {
+    violet: "border-violet-500/30 bg-violet-500/10 text-violet-300",
+    blue: "border-blue-500/30 bg-blue-500/10 text-blue-300",
+    emerald: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+    amber: "border-amber-500/30 bg-amber-500/10 text-amber-300",
+    zinc: "border-zinc-700 bg-zinc-800/60 text-zinc-400",
+  };
+  return (
+    <span
+      title={title}
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${colorMap[color]} cursor-default`}
+    >
+      {label}
+    </span>
+  );
+}
 
 export default function ReportDashboard({ data }: { data: ScanResponse }) {
   const checks = useMemo(
@@ -44,6 +98,12 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
             <p className="mt-3 max-w-3xl text-sm leading-6 text-zinc-400">
               {data.description || "No repository description provided."}
             </p>
+            {/* Context badges */}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <ContextBadge label={REPO_TYPE_LABELS[data.context.repoType]} color="violet" title={data.context.typeReason} />
+              <ContextBadge label={STACK_LABELS[data.context.techStack]} color="blue" />
+              <ContextBadge label={MATURITY_LABELS[data.context.maturity]} color={data.context.maturity === "production" ? "emerald" : data.context.maturity === "growing" ? "amber" : "zinc"} title={data.context.maturityReason} />
+            </div>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center sm:min-w-80">
             <Metric label="Stars" value={data.stars.toLocaleString()} />
@@ -59,7 +119,9 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-white">Category Breakdown</h2>
-              <p className="mt-1 text-sm text-zinc-500">Scored against the MVP health model.</p>
+              <p className="mt-1 text-sm text-zinc-500">
+                Weighted for a <span className="text-violet-400">{REPO_TYPE_LABELS[data.context.repoType]}</span> — {data.context.typeReason.toLowerCase()}.
+              </p>
             </div>
             <span className="rounded-full border border-zinc-800 px-3 py-1 font-mono text-xs text-zinc-400">
               {passedChecks.length}/{checks.length} passed

@@ -48,7 +48,9 @@ export interface ScanResponse {
   forks: number;
   language: string;
   totalScore: number;
+  maxPossibleScore: number;
   categories: CategoryResult[];
+  context: import("@/lib/detector").RepoContext;
 }
 
 export interface ScanErrorResponse {
