@@ -1,0 +1,16 @@
+  ▲ Next.js 14.2.35
+  - Local:        http://127.0.0.1:3000
+  - Network:      http://127.0.0.1:3000
+
+ ✓ Starting...
+ ✓ Ready in 1758ms
+ ○ Compiling / ...
+ ✓ Compiled / in 7.1s (486 modules)
+ GET / 200 in 7463ms
+ GET / 200 in 54ms
+ GET / 200 in 38ms
+ ○ Compiling /api/scan ...
+ ✓ Compiled /api/scan in 1274ms (307 modules)
+ GET /api/scan?repo=https%3A%2F%2Fgithub.com%2Foctocat%2FHello-World 200 in 2461ms
+ GET /api/scan?repo=https%3A%2F%2Fgithub.com%2Foctocat%2FHello-World 200 in 24ms
+[?25h
