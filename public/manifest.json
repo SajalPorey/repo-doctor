@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "RepoDoctor",
+  "version": "1.0",
+  "description": "GitHub repository health checker — auto-scans any repo you visit",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "RepoDoctor"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://github.com/*",
+    "https://api.github.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["index.html", "inline-scripts/*", "next/*", "*.js", "*.css", "*.html"],
+      "matches": ["https://github.com/*"]
+    }
+  ]
+}

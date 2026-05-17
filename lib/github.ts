@@ -24,18 +24,36 @@ export interface GitHubApiError {
   };
 }
 
-const token = process.env.GITHUB_TOKEN?.trim();
+let octokitInstance: Octokit | null = null;
 
-export const octokit = new Octokit({
-  auth: token || undefined,
-  userAgent: "RepoDoctor/0.1.0"
-});
+export function getOctokit(): Octokit {
+  if (octokitInstance) return octokitInstance;
+  
+  let token = undefined;
+  if (typeof window !== "undefined") {
+    token = window.localStorage.getItem("repodoctor_github_token") || undefined;
+  }
+  if (!token && typeof process !== "undefined" && process.env) {
+    token = process.env.GITHUB_TOKEN?.trim() || undefined;
+  }
+
+  octokitInstance = new Octokit({
+    auth: token,
+    userAgent: "RepoDoctor/0.1.0"
+  });
+  
+  return octokitInstance;
+}
+
+export function resetOctokit() {
+  octokitInstance = null;
+}
 
 export async function fetchRepoMetadata(
   owner: string,
   repo: string
 ): Promise<GitHubRepoMetadata> {
-  const { data } = await octokit.rest.repos.get({ owner, repo });
+  const { data } = await getOctokit().rest.repos.get({ owner, repo });
 
   return {
     repoName: data.name,
@@ -54,7 +72,7 @@ export async function fetchRepoTree(
   repo: string,
   branch: string
 ): Promise<RepoTreeItem[]> {
-  const { data } = await octokit.rest.git.getTree({
+  const { data } = await getOctokit().rest.git.getTree({
     owner,
     repo,
     tree_sha: branch,
@@ -75,7 +93,7 @@ export async function fetchFileContent(
   path: string,
   ref: string
 ): Promise<string> {
-  const { data } = await octokit.rest.repos.getContent({
+  const { data } = await getOctokit().rest.repos.getContent({
     owner,
     repo,
     path,
@@ -86,7 +104,19 @@ export async function fetchFileContent(
     return "";
   }
 
-  return Buffer.from(data.content, "base64").toString("utf8");
+  // Browser-compatible base64 to utf8 decoding
+  try {
+    // Escape and decodeURIComponent handles utf8 characters correctly after atob
+    const binary = atob(data.content.replace(/\n/g, ''));
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return new TextDecoder('utf-8').decode(bytes);
+  } catch (e) {
+    console.error("Failed to decode base64 content", e);
+    return "";
+  }
 }
 
 export function isGitHubApiError(error: unknown): error is GitHubApiError {

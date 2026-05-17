@@ -1,85 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import CategoryScore from "@/components/CategoryScore";
 import CheckList, { type DisplayCheck } from "@/components/CheckList";
 import ScoreCard from "@/components/ScoreCard";
 import SuggestionCard from "@/components/SuggestionCard";
-import type { ScanErrorResponse, ScanResponse } from "@/types/scan";
+import type { ScanResponse } from "@/types/scan";
 
-interface ReportDashboardProps {
-  initialRepo: string;
-}
-
-type LoadState =
-  | { status: "loading" }
-  | { status: "ready"; data: ScanResponse }
-  | { status: "error"; message: string };
-
-export default function ReportDashboard({ initialRepo }: ReportDashboardProps) {
-  const [state, setState] = useState<LoadState>({ status: "loading" });
-
-  const loadScan = useCallback(async () => {
-    if (!initialRepo) {
-      setState({
-        status: "error",
-        message: "Missing repository URL. Scan a repo from the home page."
-      });
-      return;
-    }
-
-    setState({ status: "loading" });
-
-    const cached = readCachedScan(initialRepo);
-    if (cached) {
-      setState({ status: "ready", data: cached });
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/scan?repo=${encodeURIComponent(initialRepo)}`);
-      const payload = (await response.json()) as ScanResponse | ScanErrorResponse;
-
-      if (!response.ok || "error" in payload) {
-        const message =
-          "error" in payload ? payload.error.message : "Repo scan failed. Please retry.";
-        throw new Error(message);
-      }
-
-      window.sessionStorage.setItem(
-        "repodoctor:last-scan",
-        JSON.stringify({
-          repoUrl: initialRepo,
-          scan: payload
-        })
-      );
-      setState({ status: "ready", data: payload });
-    } catch (error) {
-      setState({
-        status: "error",
-        message: error instanceof Error ? error.message : "Network error. Please retry."
-      });
-    }
-  }, [initialRepo]);
-
-  useEffect(() => {
-    void loadScan();
-  }, [loadScan]);
-
-  if (state.status === "loading") {
-    return <ReportLoading />;
-  }
-
-  if (state.status === "error") {
-    return <ReportError message={state.message} onRetry={() => void loadScan()} />;
-  }
-
-  return <ReportReady data={state.data} />;
-}
-
-function ReportReady({ data }: { data: ScanResponse }) {
+export default function ReportDashboard({ data }: { data: ScanResponse }) {
   const checks = useMemo(
     () =>
       data.categories.flatMap((category) =>
