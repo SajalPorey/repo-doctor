@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import CategoryScore from "@/components/CategoryScore";
 import CheckList, { type DisplayCheck } from "@/components/CheckList";
 import ScoreCard from "@/components/ScoreCard";
 import SuggestionCard from "@/components/SuggestionCard";
+import RiskWarnings from "@/components/RiskWarnings";
+import ContributeGuide from "@/components/ContributeGuide";
 import type { ScanResponse } from "@/types/scan";
 import type { RepoType, TechStack, MaturityLevel } from "@/lib/detector";
 
@@ -76,6 +78,7 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
   );
   const passedChecks = checks.filter((check) => check.passed);
   const failedChecks = checks.filter((check) => !check.passed);
+  const [tab, setTab] = useState<"health" | "contribute">("health");
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -113,64 +116,108 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
         </div>
       </section>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[320px_1fr]">
-        <ScoreCard score={data.totalScore} />
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950/70 p-5">
-          <div className="mb-5 flex items-center justify-between gap-3">
-            <div>
-              <h2 className="text-lg font-semibold text-white">Category Breakdown</h2>
-              <p className="mt-1 text-sm text-zinc-500">
-                Weighted for a <span className="text-violet-400">{REPO_TYPE_LABELS[data.context.repoType]}</span> — {data.context.typeReason.toLowerCase()}.
-              </p>
-            </div>
-            <span className="rounded-full border border-zinc-800 px-3 py-1 font-mono text-xs text-zinc-400">
-              {passedChecks.length}/{checks.length} passed
-            </span>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {data.categories.map((category) => (
-              <CategoryScore key={category.name} category={category} />
-            ))}
-          </div>
-        </section>
-      </div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <CheckList title="Passed Checks" checks={passedChecks} tone="passed" />
-        <CheckList title="Failed Checks" checks={failedChecks} tone="failed" />
-      </div>
-
-      <section className="mt-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-semibold text-white">Upgrade Suggestions</h2>
-            <p className="mt-1 text-sm text-zinc-500">
-              Actionable fixes generated from failed checks.
-            </p>
-          </div>
-        </div>
-
-        {failedChecks.length === 0 ? (
-          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-5 text-sm text-emerald-200">
-            No failed checks. This repository passes the current RepoDoctor MVP model.
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {failedChecks.map((check) => (
-              <SuggestionCard key={`${check.categoryName}-${check.id}`} check={check} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <div className="py-10 text-center">
-        <Link
-          href="/"
-          className="inline-flex rounded-md bg-violet-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-400"
+      {/* Tab switcher */}
+      <div className="mt-4 flex rounded-lg border border-zinc-800 bg-zinc-900/60 p-1">
+        <button
+          onClick={() => setTab("health")}
+          className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${
+            tab === "health"
+              ? "bg-violet-500 text-white"
+              : "text-zinc-400 hover:text-white"
+          }`}
         >
-          Scan another repo
-        </Link>
+          🩺 Health Report
+        </button>
+        <button
+          onClick={() => setTab("contribute")}
+          className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${
+            tab === "contribute"
+              ? "bg-violet-500 text-white"
+              : "text-zinc-400 hover:text-white"
+          }`}
+        >
+          📘 Contribute
+        </button>
       </div>
+
+      {tab === "health" && (
+        <>
+          {/* Risk warnings above score */}
+          <div className="mt-6">
+            <RiskWarnings risks={data.risks} />
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+            <ScoreCard score={data.totalScore} />
+            <section className="rounded-lg border border-zinc-800 bg-zinc-950/70 p-5">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-white">Category Breakdown</h2>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    Weighted for a <span className="text-violet-400">{REPO_TYPE_LABELS[data.context.repoType]}</span> — {data.context.typeReason.toLowerCase()}.
+                  </p>
+                </div>
+                <span className="rounded-full border border-zinc-800 px-3 py-1 font-mono text-xs text-zinc-400">
+                  {passedChecks.length}/{checks.length} passed
+                </span>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {data.categories.map((category) => (
+                  <CategoryScore key={category.name} category={category} />
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            <CheckList title="Passed Checks" checks={passedChecks} tone="passed" />
+            <CheckList title="Failed Checks" checks={failedChecks} tone="failed" />
+          </div>
+
+          <section className="mt-6">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-semibold text-white">Upgrade Suggestions</h2>
+                <p className="mt-1 text-sm text-zinc-500">
+                  Actionable fixes generated from failed checks.
+                </p>
+              </div>
+            </div>
+
+            {failedChecks.length === 0 ? (
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-5 text-sm text-emerald-200">
+                No failed checks. This repository passes the current RepoDoctor MVP model.
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {failedChecks.map((check) => (
+                  <SuggestionCard key={`${check.categoryName}-${check.id}`} check={check} />
+                ))}
+              </div>
+            )}
+          </section>
+
+          <div className="py-10 text-center">
+            <Link
+              href="/"
+              className="inline-flex rounded-md bg-violet-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-400"
+            >
+              Scan another repo
+            </Link>
+          </div>
+        </>
+      )}
+
+      {tab === "contribute" && (
+        <div className="mt-6">
+          <ContributeGuide
+            owner={data.owner}
+            repoName={data.repoName}
+            defaultBranch={data.defaultBranch}
+            hasContributing={data.hasContributing}
+          />
+        </div>
+      )}
     </main>
   );
 }

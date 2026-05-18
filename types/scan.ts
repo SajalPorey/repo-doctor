@@ -41,6 +41,16 @@ export interface PackageJson {
   [key: string]: unknown;
 }
 
+export type RiskSeverity = "high" | "medium" | "info";
+
+export interface RiskItem {
+  id: string;
+  severity: RiskSeverity;
+  title: string;
+  description: string;
+  fix: string;
+}
+
 export interface ScanResponse {
   repoName: string;
   owner: string;
@@ -52,6 +62,9 @@ export interface ScanResponse {
   maxPossibleScore: number;
   categories: CategoryResult[];
   context: import("@/lib/detector").RepoContext;
+  risks: RiskItem[];
+  hasContributing: boolean;
+  defaultBranch: string;
 }
 
 export interface ScanErrorResponse {

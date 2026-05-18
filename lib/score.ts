@@ -4,6 +4,7 @@ import { scanDocumentation } from "@/lib/scanners/documentation";
 import { scanHygiene } from "@/lib/scanners/hygiene";
 import { scanSecurity } from "@/lib/scanners/security";
 import { scanTesting } from "@/lib/scanners/testing";
+import { scanRisks } from "@/lib/scanners/risks";
 import { buildRepoContext, CATEGORY_WEIGHTS } from "@/lib/detector";
 import type { GitHubRepoMetadata } from "@/lib/github";
 import type { CategoryResult, ScanContext, ScanResponse } from "@/types/scan";
@@ -58,6 +59,14 @@ export function buildScanResult(
   const weights = CATEGORY_WEIGHTS[repoContext.repoType];
   const { totalScore, maxPossibleScore } = calculateWeightedScore(categories, weights);
 
+  // 5. Detect repo risks
+  const risks = scanRisks(enrichedContext);
+
+  // 6. Check for CONTRIBUTING.md
+  const hasContributing = context.paths.some(
+    (p) => p.toLowerCase() === "contributing.md" || p.toLowerCase() === ".github/contributing.md"
+  );
+
   return {
     repoName: metadata.repoName,
     owner: metadata.owner,
@@ -68,6 +77,9 @@ export function buildScanResult(
     totalScore,
     maxPossibleScore,
     categories,
-    context: repoContext
+    context: repoContext,
+    risks,
+    hasContributing,
+    defaultBranch: metadata.defaultBranch
   };
 }
