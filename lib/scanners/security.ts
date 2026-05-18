@@ -13,7 +13,7 @@ export function scanSecurity(context: ScanContext): CategoryResult {
       suggestion: {
         why: "Committed .env files often leak real API keys, database URLs, and service credentials.",
         fix: "Remove .env from git history if needed, add it to .gitignore, and keep only .env.example.",
-        example: ".env"
+        example: "# Add to .gitignore:\n.env\n.env.local\n.env*.local"
       }
     },
     {
@@ -29,13 +29,13 @@ export function scanSecurity(context: ScanContext): CategoryResult {
     },
     {
       id: "readme-no-secrets",
-      label: "README has no obvious hardcoded secrets",
-      passed: !/(API[_-]?KEY|SECRET|TOKEN|PASSWORD)/i.test(readme),
+      label: "README has no hardcoded secrets",
+      passed: !/(API[_-]?KEY|SECRET|TOKEN|PASSWORD)\s*=\s*['"]?[A-Za-z0-9_\-]{16,}/i.test(readme),
       points: 5,
       suggestion: {
-        why: "Secrets in docs are easy to copy, leak, and accidentally reuse.",
+        why: "Real secrets in docs are easy to copy, leak, and accidentally reuse.",
         fix: "Replace real-looking secrets with placeholders and rotate any exposed credentials.",
-        example: "API_KEY=your_api_key_here"
+        example: "# Good:\nGITHUB_TOKEN=your_token_here\n\n# Bad:\nGITHUB_TOKEN=ghp_realTokenValue123"
       }
     },
     {
