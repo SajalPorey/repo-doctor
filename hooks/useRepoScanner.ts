@@ -49,7 +49,8 @@ export function useRepoScanner() {
       const scanResult = buildScanResult(metadata, {
         paths,
         readmeContent: readme,
-        packageJson: packageJsonContent || null
+        packageJson: packageJsonContent || null,
+        techStack: "other" // detected & overridden by buildScanResult via detector
       });
 
       setResult(scanResult);

@@ -78,7 +78,6 @@
     border: none;
     background: #09090b;
   `;
-  iframe.allow = 'same-origin';
 
   sidebar.appendChild(header);
   sidebar.appendChild(iframe);

@@ -21,7 +21,6 @@ export function calculateWeightedScore(
     maxWeightedScore += category.maxScore * w;
   }
 
-  // Normalize back to 0–100 scale
   const totalScore = maxWeightedScore > 0
     ? Math.round((weightedScore / maxWeightedScore) * 100)
     : 0;
@@ -33,15 +32,7 @@ export function buildScanResult(
   metadata: GitHubRepoMetadata,
   context: ScanContext
 ): ScanResponse {
-  const categories = [
-    scanDocumentation(context),
-    scanSecurity(context),
-    scanCiCd(context),
-    scanTesting(context),
-    scanCodeQuality(context),
-    scanHygiene(context)
-  ];
-
+  // 1. Detect repo context (type, stack, maturity)
   const repoContext = buildRepoContext(
     context.paths,
     metadata.stars,
@@ -50,6 +41,20 @@ export function buildScanResult(
     context.packageJson
   );
 
+  // 2. Enrich ScanContext with detected tech stack for stack-aware scanners
+  const enrichedContext: ScanContext = { ...context, techStack: repoContext.techStack };
+
+  // 3. Run all scanners with enriched context
+  const categories = [
+    scanDocumentation(enrichedContext),
+    scanSecurity(enrichedContext),
+    scanCiCd(enrichedContext),
+    scanTesting(enrichedContext),
+    scanCodeQuality(enrichedContext),
+    scanHygiene(enrichedContext)
+  ];
+
+  // 4. Apply repo-type-aware weight multipliers
   const weights = CATEGORY_WEIGHTS[repoContext.repoType];
   const { totalScore, maxPossibleScore } = calculateWeightedScore(categories, weights);
 

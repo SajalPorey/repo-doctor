@@ -31,6 +31,7 @@ export interface ScanContext {
   paths: string[];
   readmeContent: string;
   packageJson: PackageJson | null;
+  techStack: import("@/lib/detector").TechStack;
 }
 
 export interface PackageJson {
