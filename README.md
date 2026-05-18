@@ -15,6 +15,8 @@ RepoDoctor is a Chrome Extension that automatically appears as a sidebar wheneve
 - **Maturity-calibrated scoring** — Adjusts expectations based on age, stars, and forks
 - **🔴 Risk Warnings** — Detects dangerous patterns (committed `.env`, missing `.gitignore`, DB migrations on main, lockfile conflicts, and more)
 - **📘 Contribute Guide** — Auto-generated step-by-step git workflow with copy-able, repo-specific commands
+- **🛠️ Actions Generator** — 1-click CI/CD workflow generator based on repo's tech stack (TypeScript, Python, Rust, Go, etc.)
+- **Scan History** — Remembers your last 20 scanned repos locally for quick re-checks
 - **Upgrade suggestions** — Actionable fix for every failed check
 - **GitHub PAT support** — Save your token locally to avoid API rate limits
 - **Zero backend** — Runs entirely in your browser, no server required
@@ -33,6 +35,7 @@ RepoDoctor is a Chrome Extension that automatically appears as a sidebar wheneve
    - Passed / Failed checks
    - Actionable upgrade suggestions
 5. Switch to the **📘 Contribute tab** for a step-by-step git guide to contribute to the repo
+6. Switch to the **🛠️ Actions tab** to generate a stack-specific GitHub Actions CI workflow
 
 Use the **🩺 purple toggle tab** on the right edge to open/close the sidebar anytime.
 
@@ -146,16 +149,20 @@ repodoctor/
 │   ├── ReportDashboard.tsx       # Full scan results with tabs
 │   ├── RiskWarnings.tsx          # 🔴 Risk warning cards
 │   ├── ContributeGuide.tsx       # 📘 Step-by-step contribute guide
+│   ├── ActionsGenerator.tsx      # 🛠️ GitHub Actions workflow generator
+│   ├── ScanHistory.tsx           # Scan history list
 │   ├── RepoUrlForm.tsx           # URL input form
 │   ├── ScoreCard.tsx             # Overall score display
 │   ├── CategoryScore.tsx         # Per-category breakdown
 │   └── SuggestionCard.tsx        # Upgrade suggestions
 ├── hooks/
-│   └── useRepoScanner.ts         # Client-side GitHub scan orchestration
+│   ├── useRepoScanner.ts         # Client-side GitHub scan orchestration
+│   └── useScanHistory.ts         # LocalStorage history hook
 ├── lib/
 │   ├── github.ts                 # Octokit wrapper (browser-compatible)
 │   ├── detector.ts               # Repo type, stack & maturity detection
 │   ├── score.ts                  # Weighted score aggregation
+│   ├── actionsGenerator.ts       # CI/CD workflow template generation
 │   └── scanners/
 │       ├── cicd.ts               # CI/CD checks
 │       ├── codeQuality.ts        # Code quality checks (stack-aware)
@@ -181,7 +188,8 @@ repodoctor/
 - [x] Maturity-calibrated scoring (age + stars)
 - [x] Repo Risk Warnings (`.env`, migrations, lockfile conflicts, etc.)
 - [x] Contribute Guide (step-by-step git workflow)
-- [ ] Scan history across repos
+- [x] Actions Generator (1-click stack-specific CI/CD YAML)
+- [x] Scan history across repos (LocalStorage)
 - [ ] Dark/light sidebar theme toggle
 - [ ] Chrome Web Store publish
 

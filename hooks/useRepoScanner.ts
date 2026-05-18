@@ -6,6 +6,7 @@ import {
   isGitHubApiError
 } from "@/lib/github";
 import { buildScanResult } from "@/lib/score";
+import { addScanToHistory } from "@/hooks/useScanHistory";
 import type { ScanResponse, PackageJson } from "@/types/scan";
 
 export function useRepoScanner() {
@@ -54,6 +55,15 @@ export function useRepoScanner() {
       });
 
       setResult(scanResult);
+
+      // 5. Add to history
+      addScanToHistory({
+        owner: scanResult.owner,
+        repoName: scanResult.repoName,
+        score: scanResult.totalScore,
+        language: scanResult.language,
+        repoType: scanResult.context.repoType
+      });
     } catch (err: unknown) {
       console.error(err);
       if (isGitHubApiError(err)) {

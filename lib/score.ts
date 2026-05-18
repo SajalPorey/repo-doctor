@@ -62,9 +62,19 @@ export function buildScanResult(
   // 5. Detect repo risks
   const risks = scanRisks(enrichedContext);
 
-  // 6. Check for CONTRIBUTING.md
+  // 6. Check for CONTRIBUTING.md and CI
   const hasContributing = context.paths.some(
     (p) => p.toLowerCase() === "contributing.md" || p.toLowerCase() === ".github/contributing.md"
+  );
+  const hasCi = context.paths.some(
+    (p) =>
+      p.toLowerCase().startsWith(".github/workflows/") ||
+      p.toLowerCase() === ".circleci/config.yml" ||
+      p.toLowerCase() === ".travis.yml" ||
+      p.toLowerCase() === "bitbucket-pipelines.yml" ||
+      p.toLowerCase() === "gitlab-ci.yml" ||
+      p.toLowerCase() === ".gitlab-ci.yml" ||
+      p.toLowerCase() === "jenkinsfile"
   );
 
   return {
@@ -80,6 +90,7 @@ export function buildScanResult(
     context: repoContext,
     risks,
     hasContributing,
-    defaultBranch: metadata.defaultBranch
+    defaultBranch: metadata.defaultBranch,
+    hasCi
   };
 }

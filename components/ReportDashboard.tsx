@@ -9,6 +9,7 @@ import ScoreCard from "@/components/ScoreCard";
 import SuggestionCard from "@/components/SuggestionCard";
 import RiskWarnings from "@/components/RiskWarnings";
 import ContributeGuide from "@/components/ContributeGuide";
+import ActionsGenerator from "@/components/ActionsGenerator";
 import type { ScanResponse } from "@/types/scan";
 import type { RepoType, TechStack, MaturityLevel } from "@/lib/detector";
 
@@ -78,7 +79,7 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
   );
   const passedChecks = checks.filter((check) => check.passed);
   const failedChecks = checks.filter((check) => !check.passed);
-  const [tab, setTab] = useState<"health" | "contribute">("health");
+  const [tab, setTab] = useState<"health" | "contribute" | "workflow">("health");
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -137,6 +138,16 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
           }`}
         >
           📘 Contribute
+        </button>
+        <button
+          onClick={() => setTab("workflow")}
+          className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${
+            tab === "workflow"
+              ? "bg-violet-500 text-white"
+              : "text-zinc-400 hover:text-white"
+          }`}
+        >
+          🛠️ Actions
         </button>
       </div>
 
@@ -215,6 +226,16 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
             repoName={data.repoName}
             defaultBranch={data.defaultBranch}
             hasContributing={data.hasContributing}
+          />
+        </div>
+      )}
+
+      {tab === "workflow" && (
+        <div className="mt-6">
+          <ActionsGenerator
+            techStack={data.context.techStack}
+            defaultBranch={data.defaultBranch}
+            hasCi={data.hasCi}
           />
         </div>
       )}

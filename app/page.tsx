@@ -5,6 +5,7 @@ declare var chrome: any;
 import { useEffect, useState, useCallback } from "react";
 import RepoUrlForm from "@/components/RepoUrlForm";
 import ReportDashboard from "@/components/ReportDashboard";
+import ScanHistory from "@/components/ScanHistory";
 import { useRepoScanner } from "@/hooks/useRepoScanner";
 import { resetOctokit } from "@/lib/github";
 
@@ -95,12 +96,18 @@ export default function HomePage() {
         )}
 
         {!result && (
-          <RepoUrlForm 
-            initialUrl={initialUrl} 
-            loading={loading} 
-            error={error} 
-            onScan={(owner, repo) => scanRepo(owner, repo)} 
-          />
+          <div className="space-y-8">
+            <RepoUrlForm 
+              initialUrl={initialUrl} 
+              loading={loading} 
+              error={error} 
+              onScan={(owner, repo) => scanRepo(owner, repo)} 
+            />
+            
+            <div className="pt-8 border-t border-zinc-800/60">
+              <ScanHistory onRescan={(owner, repo) => scanRepo(owner, repo)} />
+            </div>
+          </div>
         )}
 
         {result && (

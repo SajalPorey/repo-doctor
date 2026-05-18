@@ -65,6 +65,7 @@ export interface ScanResponse {
   risks: RiskItem[];
   hasContributing: boolean;
   defaultBranch: string;
+  hasCi: boolean;
 }
 
 export interface ScanErrorResponse {
