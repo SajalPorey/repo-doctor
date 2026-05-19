@@ -117,9 +117,10 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
               <ContextBadge label={MATURITY_LABELS[data.context.maturity]} color={data.context.maturity === "production" ? "emerald" : data.context.maturity === "growing" ? "amber" : "zinc"} title={data.context.maturityReason} />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-center sm:min-w-96 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 text-center sm:min-w-96 sm:grid-cols-5">
             <Metric label="Stars" value={data.stars.toLocaleString()} />
             <Metric label="Forks" value={data.forks.toLocaleString()} />
+            <Metric label="Issues" value={data.openIssues.toLocaleString()} />
             <Metric label="Language" value={data.language} />
             <Metric label="Updated" value={formatDate(data.updatedAt)} />
           </div>

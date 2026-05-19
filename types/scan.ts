@@ -60,6 +60,7 @@ export interface ScanResponse {
   forks: number;
   language: string;
   updatedAt: string;
+  openIssues: number;
   totalScore: number;
   maxPossibleScore: number;
   categories: CategoryResult[];

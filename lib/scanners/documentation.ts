@@ -58,10 +58,26 @@ export function scanDocumentation(context: ScanContext): CategoryResult {
         fix: "Add CONTRIBUTING.md with setup, branch, commit, and pull request guidelines.",
         example: "CONTRIBUTING.md"
       }
+    },
+    {
+      id: "issue-pr-templates",
+      label: "Issue or PR templates exist",
+      passed: hasAnyPath(paths, [
+        ".github/issue_template.md",
+        ".github/pull_request_template.md",
+        "issue_template.md",
+        "pull_request_template.md"
+      ]) || paths.some(p => p.startsWith(".github/issue_template/") || p.startsWith(".github/pull_request_template/")),
+      points: 3,
+      suggestion: {
+        why: "Templates guide contributors to provide necessary information, making issues and PRs actionable.",
+        fix: "Create an ISSUE_TEMPLATE.md and PULL_REQUEST_TEMPLATE.md in a .github/ folder.",
+        example: ".github/ISSUE_TEMPLATE.md"
+      }
     }
   ];
 
-  return buildCategory("Documentation", 20, checks);
+  return buildCategory("Documentation", checks);
 }
 
 function hasAnyPath(paths: string[], candidates: string[]): boolean {
@@ -70,9 +86,9 @@ function hasAnyPath(paths: string[], candidates: string[]): boolean {
 
 function buildCategory(
   name: CategoryResult["name"],
-  maxScore: number,
   checks: RepoCheck[]
 ): CategoryResult {
+  const maxScore = checks.reduce((total, check) => total + check.points, 0);
   return {
     name,
     maxScore,

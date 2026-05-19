@@ -62,6 +62,23 @@ export function scanSecurity(context: ScanContext): CategoryResult {
     }
   });
 
+  checks.push({
+    id: "automated-dependency-updates",
+    label: "Automated dependency updates configured",
+    passed: hasAnyPath(paths, [
+      ".github/dependabot.yml",
+      "renovate.json",
+      "renovate.json5",
+      ".github/renovate.json"
+    ]),
+    points: 4,
+    suggestion: {
+      why: "Automatically updating dependencies protects your repository against newly discovered security vulnerabilities.",
+      fix: "Set up Dependabot or Renovate Bot to automatically create PRs for outdated dependencies.",
+      example: ".github/dependabot.yml"
+    }
+  });
+
   return buildCategory("Security", checks);
 }
 

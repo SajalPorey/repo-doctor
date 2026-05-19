@@ -11,6 +11,7 @@ export interface GitHubRepoMetadata {
   private: boolean;
   createdAt: string;
   updatedAt: string;
+  openIssues: number;
 }
 
 export interface RepoTreeItem {
@@ -67,7 +68,8 @@ export async function fetchRepoMetadata(
     defaultBranch: data.default_branch ?? "main",
     private: data.private,
     createdAt: data.created_at ?? new Date().toISOString(),
-    updatedAt: data.updated_at ?? new Date().toISOString()
+    updatedAt: data.updated_at ?? new Date().toISOString(),
+    openIssues: data.open_issues_count ?? 0
   };
 }
 

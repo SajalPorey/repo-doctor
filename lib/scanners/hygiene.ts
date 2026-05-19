@@ -41,7 +41,7 @@ export function scanHygiene(context: ScanContext): CategoryResult {
 
   return {
     name: "Repo Hygiene",
-    maxScore: 10,
+    maxScore: checks.reduce((total, check) => total + check.points, 0),
     score: checks.reduce((total, check) => total + (check.passed ? check.points : 0), 0),
     checks
   };
