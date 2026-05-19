@@ -7,23 +7,23 @@ export default function ScoreCard({ score }: ScoreCardProps) {
   const color = getScoreColor(clampedScore);
 
   return (
-    <section className="rounded-lg border border-zinc-800 bg-zinc-900/80 p-6 shadow-violet-glow">
+    <section className="rounded-lg border border-zinc-200 bg-white/80 p-6 shadow-violet-glow dark:border-zinc-800 dark:bg-zinc-900/80">
       <div className="flex flex-col items-center justify-center">
         <div
           className="flex h-44 w-44 items-center justify-center rounded-full p-3"
           style={{
-            background: `conic-gradient(${color} ${clampedScore * 3.6}deg, #27272a 0deg)`
+            background: `conic-gradient(${color} ${clampedScore * 3.6}deg, transparent 0deg)`
           }}
           aria-label={`Repository health score ${clampedScore} out of 100`}
         >
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-full border border-zinc-800 bg-zinc-950">
-            <span className="text-5xl font-bold tracking-normal text-white">{clampedScore}</span>
+          <div className="flex h-full w-full flex-col items-center justify-center rounded-full border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
+            <span className="text-5xl font-bold tracking-normal text-zinc-900 dark:text-white">{clampedScore}</span>
             <span className="mt-1 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
               Health
             </span>
           </div>
         </div>
-        <p className="mt-5 text-center text-sm text-zinc-400">
+        <p className="mt-5 text-center text-sm text-zinc-600 dark:text-zinc-400">
           {getScoreLabel(clampedScore)}
         </p>
       </div>
