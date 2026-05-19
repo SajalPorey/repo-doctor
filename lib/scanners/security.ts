@@ -15,8 +15,11 @@ export function scanSecurity(context: ScanContext): CategoryResult {
         fix: "Remove .env from git history if needed, add it to .gitignore, and keep only .env.example.",
         example: "# Add to .gitignore:\n.env\n.env.local\n.env*.local"
       }
-    },
-    {
+    }
+  ];
+
+  if (!["library", "docs-only", "research"].includes(context.repoType)) {
+    checks.push({
       id: "env-example-exists",
       label: ".env.example exists",
       passed: hasFileNamed(paths, ".env.example"),
@@ -26,38 +29,40 @@ export function scanSecurity(context: ScanContext): CategoryResult {
         fix: "Create .env.example with all required keys and no real values.",
         example: "GITHUB_TOKEN=\nDATABASE_URL="
       }
-    },
-    {
-      id: "readme-no-secrets",
-      label: "README has no hardcoded secrets",
-      passed: !/(API[_-]?KEY|SECRET|TOKEN|PASSWORD)\s*=\s*['"]?[A-Za-z0-9_\-]{16,}/i.test(readme),
-      points: 5,
-      suggestion: {
-        why: "Real secrets in docs are easy to copy, leak, and accidentally reuse.",
-        fix: "Replace real-looking secrets with placeholders and rotate any exposed credentials.",
-        example: "# Good:\nGITHUB_TOKEN=your_token_here\n\n# Bad:\nGITHUB_TOKEN=ghp_realTokenValue123"
-      }
-    },
-    {
-      id: "dependency-lockfile-exists",
-      label: "Dependency lockfile or requirements file exists",
-      passed: hasAnyPath(paths, [
-        "package-lock.json",
-        "yarn.lock",
-        "pnpm-lock.yaml",
-        "poetry.lock",
-        "requirements.txt"
-      ]),
-      points: 5,
-      suggestion: {
-        why: "Lockfiles make installs reproducible and reduce surprise dependency changes.",
-        fix: "Commit the lockfile produced by your package manager.",
-        example: "package-lock.json"
-      }
-    }
-  ];
+    });
+  }
 
-  return buildCategory("Security", 20, checks);
+  checks.push({
+    id: "readme-no-secrets",
+    label: "README has no hardcoded secrets",
+    passed: !/(API[_-]?KEY|SECRET|TOKEN|PASSWORD)\s*=\s*['"]?[A-Za-z0-9_\-]{16,}/i.test(readme),
+    points: 5,
+    suggestion: {
+      why: "Real secrets in docs are easy to copy, leak, and accidentally reuse.",
+      fix: "Replace real-looking secrets with placeholders and rotate any exposed credentials.",
+      example: "# Good:\nGITHUB_TOKEN=your_token_here\n\n# Bad:\nGITHUB_TOKEN=ghp_realTokenValue123"
+    }
+  });
+
+  checks.push({
+    id: "dependency-lockfile-exists",
+    label: "Dependency lockfile or requirements file exists",
+    passed: hasAnyPath(paths, [
+      "package-lock.json",
+      "yarn.lock",
+      "pnpm-lock.yaml",
+      "poetry.lock",
+      "requirements.txt"
+    ]),
+    points: 5,
+    suggestion: {
+      why: "Lockfiles make installs reproducible and reduce surprise dependency changes.",
+      fix: "Commit the lockfile produced by your package manager.",
+      example: "package-lock.json"
+    }
+  });
+
+  return buildCategory("Security", checks);
 }
 
 function hasAnyPath(paths: string[], candidates: string[]): boolean {
@@ -70,9 +75,9 @@ function hasFileNamed(paths: string[], fileName: string): boolean {
 
 function buildCategory(
   name: CategoryResult["name"],
-  maxScore: number,
   checks: RepoCheck[]
 ): CategoryResult {
+  const maxScore = checks.reduce((total, check) => total + check.points, 0);
   return {
     name,
     maxScore,

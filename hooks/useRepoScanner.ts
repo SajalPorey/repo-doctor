@@ -51,7 +51,8 @@ export function useRepoScanner() {
         paths,
         readmeContent: readme,
         packageJson: packageJsonContent || null,
-        techStack: "other" // detected & overridden by buildScanResult via detector
+        techStack: "other", // detected & overridden by buildScanResult via detector
+        repoType: "unknown" // detected & overridden by buildScanResult via detector
       });
 
       setResult(scanResult);

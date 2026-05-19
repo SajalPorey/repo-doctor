@@ -42,8 +42,8 @@ export function buildScanResult(
     context.packageJson
   );
 
-  // 2. Enrich ScanContext with detected tech stack for stack-aware scanners
-  const enrichedContext: ScanContext = { ...context, techStack: repoContext.techStack };
+  // 2. Enrich ScanContext with detected tech stack and repo type for aware scanners
+  const enrichedContext: ScanContext = { ...context, techStack: repoContext.techStack, repoType: repoContext.repoType };
 
   // 3. Run all scanners with enriched context
   const categories = [
