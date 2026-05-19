@@ -247,6 +247,8 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
       {tab === "workflow" && (
         <div className="mt-6">
           <ActionsGenerator
+            owner={data.owner}
+            repoName={data.repoName}
             techStack={data.context.techStack}
             defaultBranch={data.defaultBranch}
             hasCi={data.hasCi}

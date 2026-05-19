@@ -25,19 +25,26 @@ function CopyButton({ text }: { text: string }) {
 }
 
 interface ActionsGeneratorProps {
+  owner: string;
+  repoName: string;
   techStack: TechStack;
   defaultBranch: string;
   hasCi: boolean;
 }
 
 export default function ActionsGenerator({
+  owner,
+  repoName,
   techStack,
   defaultBranch,
   hasCi,
 }: ActionsGeneratorProps) {
   const workflows = generateWorkflows(techStack, defaultBranch);
   const [selected, setSelected] = useState(0);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const workflow = workflows[selected];
+
+  const githubNewFileUrl = `https://github.com/${owner}/${repoName}/new/${defaultBranch}?filename=.github/workflows/${workflow.filename}&value=${encodeURIComponent(workflow.yaml)}`;
 
   const stackLabel: Record<TechStack, string> = {
     typescript: "🟦 TypeScript",
@@ -56,9 +63,9 @@ export default function ActionsGenerator({
       <div className="rounded-lg border border-zinc-200 bg-white/60 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60">
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0 pr-3">
-            <p className="text-sm font-semibold text-zinc-900 truncate dark:text-white">GitHub Actions Generator</p>
+            <p className="text-sm font-semibold text-zinc-900 truncate dark:text-white">Automate Your Tests (CI)</p>
             <p className="text-xs text-zinc-600 mt-0.5 truncate dark:text-zinc-500">
-              Ready-to-use CI workflow for {stackLabel[techStack]}
+              Automatically check your {stackLabel[techStack]} code on every push or PR.
             </p>
           </div>
           {hasCi ? (
@@ -92,16 +99,42 @@ export default function ActionsGenerator({
         </div>
       )}
 
-      {/* Workflow info */}
-      <div className="space-y-1">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
-            📄 <code className="text-violet-600 dark:text-violet-300">.github/workflows/{workflow.filename}</code>
-          </p>
-          <CopyButton text={workflow.yaml} />
-        </div>
-        <p className="text-xs text-zinc-500">{workflow.description}</p>
+      {/* 1-Click Setup Box */}
+      <div className="rounded-lg border border-violet-500/30 bg-violet-50/50 p-5 text-center dark:bg-violet-500/10">
+        <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-2">1-Click Setup</h3>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-5">
+          Click the button below to open GitHub. The file will be created and filled with the correct configuration automatically. All you have to do is click &quot;Commit changes&quot;.
+        </p>
+        <a
+          href={githubNewFileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 transition"
+        >
+          Add to Repository
+          <span aria-hidden="true">→</span>
+        </a>
       </div>
+
+      <button
+        onClick={() => setShowAdvanced(!showAdvanced)}
+        className="w-full text-center text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition py-2"
+      >
+        {showAdvanced ? "Hide Advanced Setup ▲" : "Show Advanced Manual Setup ▼"}
+      </button>
+
+      {showAdvanced && (
+        <>
+          {/* Workflow info */}
+          <div className="space-y-1 mt-2">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                📄 <code className="text-violet-600 dark:text-violet-300">.github/workflows/{workflow.filename}</code>
+              </p>
+              <CopyButton text={workflow.yaml} />
+            </div>
+            <p className="text-xs text-zinc-500">{workflow.description}</p>
+          </div>
 
       {/* YAML block */}
       <div className="relative rounded-lg border border-zinc-200 bg-zinc-50 overflow-hidden dark:border-zinc-800 dark:bg-zinc-950">
@@ -118,22 +151,18 @@ export default function ActionsGenerator({
         </pre>
       </div>
 
-      {/* How to use */}
-      <div className="rounded-lg border border-zinc-200 bg-zinc-50/50 p-3 space-y-2 dark:border-zinc-800 dark:bg-zinc-900/40">
-        <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">How to add this</p>
-        {[
-          `Create the folder: .github/workflows/`,
-          `Save the YAML as: .github/workflows/${workflow.filename}`,
-          `git add .github/workflows/${workflow.filename}`,
-          `git commit -m "ci: add ${stackLabel[techStack]} CI workflow"`,
-          `git push — GitHub Actions will run automatically on next push`,
-        ].map((step, i) => (
-          <p key={i} className="text-xs text-zinc-400 flex gap-2">
-            <span className="text-violet-400 font-bold flex-shrink-0">{i + 1}.</span>
-            <code className="break-all">{step}</code>
-          </p>
-        ))}
-      </div>
+          {/* How to use */}
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50/50 p-4 space-y-3 dark:border-zinc-800 dark:bg-zinc-900/40">
+            <p className="text-sm font-semibold text-zinc-900 dark:text-white">Manual GitHub Setup</p>
+            <ol className="list-decimal pl-5 space-y-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+              <li>Go to the <strong>Actions</strong> tab on your GitHub repository.</li>
+              <li>Click <strong>New Workflow</strong> → <strong>set up a workflow yourself</strong>.</li>
+              <li>Change the filename to <code className="text-violet-600 dark:text-violet-300">{workflow.filename}</code>.</li>
+              <li>Paste the code above into the editor and click <strong>Commit changes...</strong>.</li>
+            </ol>
+          </div>
+        </>
+      )}
     </div>
   );
 }
