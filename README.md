@@ -17,6 +17,7 @@ RepoDoctor is a Chrome Extension that automatically appears as a sidebar wheneve
 - **📘 Contribute Guide** — Auto-generated step-by-step git workflow with copy-able, repo-specific commands
 - **🛠️ Actions Generator** — 1-click CI/CD workflow generator based on repo's tech stack (TypeScript, Python, Rust, Go, etc.)
 - **Scan History** — Remembers your last 20 scanned repos locally for quick re-checks
+- **Modification Time** — See exactly when the repository was last updated alongside key metrics
 - **Upgrade suggestions** — Actionable fix for every failed check
 - **GitHub PAT support** — Save your token locally to avoid API rate limits
 - **Zero backend** — Runs entirely in your browser, no server required

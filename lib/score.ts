@@ -84,6 +84,7 @@ export function buildScanResult(
     stars: metadata.stars,
     forks: metadata.forks,
     language: metadata.language,
+    updatedAt: metadata.updatedAt,
     totalScore,
     maxPossibleScore,
     categories,

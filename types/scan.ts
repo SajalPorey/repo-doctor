@@ -58,6 +58,7 @@ export interface ScanResponse {
   stars: number;
   forks: number;
   language: string;
+  updatedAt: string;
   totalScore: number;
   maxPossibleScore: number;
   categories: CategoryResult[];

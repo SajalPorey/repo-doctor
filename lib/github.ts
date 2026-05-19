@@ -10,6 +10,7 @@ export interface GitHubRepoMetadata {
   defaultBranch: string;
   private: boolean;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface RepoTreeItem {
@@ -65,7 +66,8 @@ export async function fetchRepoMetadata(
     language: data.language ?? "Unknown",
     defaultBranch: data.default_branch ?? "main",
     private: data.private,
-    createdAt: data.created_at ?? new Date().toISOString()
+    createdAt: data.created_at ?? new Date().toISOString(),
+    updatedAt: data.updated_at ?? new Date().toISOString()
   };
 }
 
