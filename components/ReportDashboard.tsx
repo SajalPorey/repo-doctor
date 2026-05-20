@@ -162,7 +162,7 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
               : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
           }`}
         >
-          🛠️ Actions
+          🛠️ Setup
         </button>
       </div>
 
@@ -253,6 +253,7 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
             techStack={data.context.techStack}
             defaultBranch={data.defaultBranch}
             hasCi={data.hasCi}
+            hasTests={data.categories.find(c => c.name === "Testing")?.score ? data.categories.find(c => c.name === "Testing")!.score > 0 : false}
           />
         </div>
       )}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { generateWorkflows } from "@/lib/actionsGenerator";
+import { getTestingGuide } from "@/lib/testingGuide";
 import type { TechStack } from "@/lib/detector";
 
 function CopyButton({ text }: { text: string }) {
@@ -30,6 +31,7 @@ interface ActionsGeneratorProps {
   techStack: TechStack;
   defaultBranch: string;
   hasCi: boolean;
+  hasTests: boolean;
 }
 
 export default function ActionsGenerator({
@@ -38,10 +40,13 @@ export default function ActionsGenerator({
   techStack,
   defaultBranch,
   hasCi,
+  hasTests,
 }: ActionsGeneratorProps) {
   const workflows = generateWorkflows(techStack, defaultBranch);
+  const testingGuide = getTestingGuide(techStack);
   const [selected, setSelected] = useState(0);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showTestGuide, setShowTestGuide] = useState(false);
   const workflow = workflows[selected];
 
   const githubNewFileUrl = `https://github.com/${owner}/${repoName}/new/${defaultBranch}?filename=.github/workflows/${workflow.filename}&value=${encodeURIComponent(workflow.yaml)}`;
@@ -163,6 +168,62 @@ export default function ActionsGenerator({
             </ol>
           </div>
         </>
+      )}
+
+      {/* Testing Guide Section */}
+      <div className="mt-8 rounded-lg border border-zinc-200 bg-white/60 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60">
+        <div className="flex items-center justify-between">
+          <div className="flex-1 min-w-0 pr-3">
+            <p className="text-sm font-semibold text-zinc-900 truncate dark:text-white">Wanna increase your testing score?</p>
+            <p className="text-xs text-zinc-600 mt-0.5 truncate dark:text-zinc-500">
+              Set up local tests using our 0 to 10 step-by-step guide.
+            </p>
+          </div>
+          {hasTests ? (
+            <span className="flex-shrink-0 whitespace-nowrap rounded-full border border-emerald-500/30 bg-emerald-50/80 px-2.5 py-1 text-xs text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">
+              ✓ Tests found
+            </span>
+          ) : (
+            <span className="flex-shrink-0 whitespace-nowrap rounded-full border border-red-500/30 bg-red-50/80 px-2.5 py-1 text-xs text-red-600 dark:bg-red-500/10 dark:text-red-300">
+              No tests yet
+            </span>
+          )}
+        </div>
+      </div>
+
+      <button
+        onClick={() => setShowTestGuide(!showTestGuide)}
+        className="w-full text-center text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition py-2"
+      >
+        {showTestGuide ? "Hide Testing Setup Guide ▲" : "Show Testing Setup Guide ▼"}
+      </button>
+
+      {showTestGuide && (
+        <div className="space-y-4">
+          <div className="rounded-lg border border-violet-500/30 bg-violet-50/50 p-5 dark:bg-violet-500/10">
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-2">{testingGuide.title}</h3>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">{testingGuide.description}</p>
+          </div>
+
+          <div className="space-y-4">
+            {testingGuide.steps.map((step, idx) => (
+              <div key={idx} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                <h4 className="text-sm font-semibold text-zinc-900 dark:text-white">{step.title}</h4>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 mb-3">{step.description}</p>
+                {step.code && (
+                  <div className="relative rounded-md border border-zinc-200 bg-zinc-50 overflow-hidden dark:border-zinc-700 dark:bg-zinc-950">
+                    <div className="absolute right-2 top-2">
+                      <CopyButton text={step.code} />
+                    </div>
+                    <pre className="overflow-x-auto p-4 text-xs leading-relaxed text-zinc-700 font-mono dark:text-zinc-300">
+                      {step.code}
+                    </pre>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
