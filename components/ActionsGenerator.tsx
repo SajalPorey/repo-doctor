@@ -54,6 +54,7 @@ export default function ActionsGenerator({
     go: "🐹 Go",
     java: "☕ Java",
     ruby: "💎 Ruby",
+    php: "🐘 PHP",
     other: "📁 Other",
   };
 

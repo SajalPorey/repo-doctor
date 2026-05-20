@@ -260,12 +260,142 @@ export function jsQualityChecks(_ctx: ScanContext): RepoCheck[] {
   return [];
 }
 
+// ── Java ──────────────────────────────────────────────────────────────────────
+export function javaTestingChecks(ctx: ScanContext): RepoCheck[] {
+  const paths = ctx.paths.map((p) => p.toLowerCase());
+  return [
+    {
+      id: "java-tests-dir",
+      label: "Test directory exists (src/test/java)",
+      passed: paths.some((p) => p.startsWith("src/test/java/")),
+      points: 5,
+      suggestion: {
+        why: "Java projects conventionally place tests in src/test/java.",
+        fix: "Add tests using JUnit or TestNG.",
+        example: "src/test/java/com/example/MyTest.java"
+      }
+    }
+  ];
+}
+
+export function javaQualityChecks(ctx: ScanContext): RepoCheck[] {
+  const paths = ctx.paths.map((p) => p.toLowerCase());
+  return [
+    {
+      id: "java-build-tool",
+      label: "Build tool configured (Maven / Gradle)",
+      passed: paths.some((p) => p === "pom.xml" || p === "build.gradle" || p === "build.gradle.kts"),
+      points: 5,
+      suggestion: {
+        why: "Build tools manage dependencies and standardise the build process.",
+        fix: "Add pom.xml or build.gradle to manage your project.",
+        example: "pom.xml"
+      }
+    },
+    {
+      id: "java-checkstyle",
+      label: "Checkstyle or Spotless configured",
+      passed: paths.some((p) => p === "checkstyle.xml" || p === "spotless.gradle" || p.includes("checkstyle")),
+      points: 5,
+      suggestion: {
+        why: "Static analysis and formatting ensure consistent Java code.",
+        fix: "Add Checkstyle or Spotless to your build pipeline.",
+        example: "checkstyle.xml"
+      }
+    }
+  ];
+}
+
+// ── PHP ───────────────────────────────────────────────────────────────────────
+export function phpTestingChecks(ctx: ScanContext): RepoCheck[] {
+  const paths = ctx.paths.map((p) => p.toLowerCase());
+  return [
+    {
+      id: "php-phpunit",
+      label: "PHPUnit configured (phpunit.xml)",
+      passed: paths.some((p) => p === "phpunit.xml" || p === "phpunit.xml.dist"),
+      points: 5,
+      suggestion: {
+        why: "PHPUnit is the standard testing framework for PHP.",
+        fix: "Add phpunit.xml and tests directory.",
+        example: "phpunit.xml"
+      }
+    }
+  ];
+}
+
+export function phpQualityChecks(ctx: ScanContext): RepoCheck[] {
+  const paths = ctx.paths.map((p) => p.toLowerCase());
+  return [
+    {
+      id: "php-composer",
+      label: "Composer configured (composer.json)",
+      passed: paths.includes("composer.json"),
+      points: 5,
+      suggestion: {
+        why: "Composer is the standard dependency manager for PHP.",
+        fix: "Initialize your project with composer init.",
+        example: "composer.json"
+      }
+    },
+    {
+      id: "php-cs-fixer",
+      label: "Code style tool configured (php-cs-fixer / phpstan)",
+      passed: paths.some((p) => p === ".php-cs-fixer.php" || p === "phpcs.xml" || p === "phpstan.neon"),
+      points: 5,
+      suggestion: {
+        why: "Code style tools and static analyzers (like PHPStan) catch bugs and format code.",
+        fix: "Add PHP CS Fixer or PHPStan to your project.",
+        example: "phpstan.neon"
+      }
+    }
+  ];
+}
+
+// ── Ruby ──────────────────────────────────────────────────────────────────────
+export function rubyTestingChecks(ctx: ScanContext): RepoCheck[] {
+  const paths = ctx.paths.map((p) => p.toLowerCase());
+  return [
+    {
+      id: "ruby-rspec-test",
+      label: "Tests exist (spec/ or test/)",
+      passed: paths.some((p) => p.startsWith("spec/") || p.startsWith("test/")),
+      points: 5,
+      suggestion: {
+        why: "Testing is deeply ingrained in the Ruby community (e.g., RSpec or Minitest).",
+        fix: "Add tests in the spec/ or test/ directory.",
+        example: "spec/models/user_spec.rb"
+      }
+    }
+  ];
+}
+
+export function rubyQualityChecks(ctx: ScanContext): RepoCheck[] {
+  const paths = ctx.paths.map((p) => p.toLowerCase());
+  return [
+    {
+      id: "ruby-rubocop",
+      label: "RuboCop configured (.rubocop.yml)",
+      passed: paths.some((p) => p === ".rubocop.yml"),
+      points: 5,
+      suggestion: {
+        why: "RuboCop is the standard linter and formatter for Ruby.",
+        fix: "Add .rubocop.yml to enforce style guidelines.",
+        example: ".rubocop.yml"
+      }
+    }
+  ];
+}
+
 // ── Dispatcher ────────────────────────────────────────────────────────────────
 export function getStackTestingChecks(ctx: ScanContext): RepoCheck[] {
   switch (ctx.techStack) {
     case "python":     return pythonTestingChecks(ctx);
     case "rust":       return rustTestingChecks(ctx);
     case "go":         return goTestingChecks(ctx);
+    case "java":       return javaTestingChecks(ctx);
+    case "php":        return phpTestingChecks(ctx);
+    case "ruby":       return rubyTestingChecks(ctx);
     case "typescript":
     case "javascript": return jsTestingChecks(ctx);
     default:           return [];
@@ -277,6 +407,9 @@ export function getStackQualityChecks(ctx: ScanContext): RepoCheck[] {
     case "python":     return pythonQualityChecks(ctx);
     case "rust":       return rustQualityChecks(ctx);
     case "go":         return goQualityChecks(ctx);
+    case "java":       return javaQualityChecks(ctx);
+    case "php":        return phpQualityChecks(ctx);
+    case "ruby":       return rubyQualityChecks(ctx);
     case "typescript":
     case "javascript": return jsQualityChecks(ctx);
     default:           return [];

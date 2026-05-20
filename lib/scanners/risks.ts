@@ -47,6 +47,21 @@ export function scanRisks(context: ScanContext): RiskItem[] {
     });
   }
 
+  // Exposed Secrets (Private Keys, AWS)
+  const hasPrivateKeys = paths.some((p) => p.endsWith(".pem") || p.endsWith(".key") || p === "id_rsa" || p === "id_rsa.pub" === false && p.includes("id_rsa"));
+  const hasAwsKeys = paths.some((p) => p.includes(".aws/credentials") || p === "aws_credentials" || p.includes("client_secret.json"));
+  
+  if (hasPrivateKeys || hasAwsKeys) {
+    risks.push({
+      id: "exposed-secrets",
+      severity: "high",
+      title: "Exposed secrets or private keys detected",
+      description:
+        "Private keys (.pem, .key, id_rsa) or cloud credentials (e.g. AWS, client_secret.json) appear to be tracked in this repository. This is a massive security risk.",
+      fix: "Revoke the exposed credentials immediately. Then use tools like BFG Repo-Cleaner or git-filter-repo to remove them from history.",
+    });
+  }
+
   // No .gitignore at all
   const hasGitignore = paths.includes(".gitignore");
   if (!hasGitignore) {
