@@ -10,6 +10,10 @@ export interface Suggestion {
   why: string;
   fix: string;
   example?: string;
+  autoFix?: {
+    filename: string;
+    content: string;
+  };
 }
 
 export interface RepoCheck {

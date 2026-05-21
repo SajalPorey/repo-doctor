@@ -7,28 +7,28 @@ export interface GeneratedWorkflow {
   yaml: string;
 }
 
-export function generateWorkflows(stack: TechStack, defaultBranch: string): GeneratedWorkflow[] {
+export function generateWorkflows(stack: TechStack, defaultBranch: string, hasTests: boolean = true): GeneratedWorkflow[] {
   const branch = defaultBranch || "main";
 
   switch (stack) {
     case "typescript":
     case "javascript":
-      return generateJsWorkflows(stack, branch);
+      return generateJsWorkflows(stack, branch, hasTests);
     case "python":
-      return generatePythonWorkflows(branch);
+      return generatePythonWorkflows(branch, hasTests);
     case "rust":
-      return generateRustWorkflows(branch);
+      return generateRustWorkflows(branch, hasTests);
     case "go":
-      return generateGoWorkflows(branch);
+      return generateGoWorkflows(branch, hasTests);
     case "java":
-      return generateJavaWorkflows(branch);
+      return generateJavaWorkflows(branch, hasTests);
     default:
-      return generateGenericWorkflow(branch);
+      return generateGenericWorkflow(branch, hasTests);
   }
 }
 
 // ── JavaScript / TypeScript ───────────────────────────────────────────────────
-function generateJsWorkflows(stack: TechStack, branch: string): GeneratedWorkflow[] {
+function generateJsWorkflows(stack: TechStack, branch: string, hasTests: boolean): GeneratedWorkflow[] {
   const isTs = stack === "typescript";
   return [
     {
@@ -58,26 +58,28 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 ${isTs ? `
       - name: Type check
-        run: npx tsc --noEmit
+        run: if [ -f tsconfig.json ]; then npx tsc --noEmit; fi
 ` : ""}
       - name: Lint
-        run: npm run lint
-
-      - name: Test
-        run: npm test
+        run: npm run lint --if-present || true
 
       - name: Build
-        run: npm run build
+        run: npm run build --if-present
+${hasTests ? `
+      - name: Test
+        run: npm test --if-present` : `
+      # - name: Test
+      #   run: npm test`}
 `
     }
   ];
 }
 
 // ── Python ────────────────────────────────────────────────────────────────────
-function generatePythonWorkflows(branch: string): GeneratedWorkflow[] {
+function generatePythonWorkflows(branch: string, hasTests: boolean): GeneratedWorkflow[] {
   return [
     {
       filename: "ci.yml",
@@ -121,16 +123,18 @@ jobs:
 
       - name: Type check with mypy
         run: mypy .
-
+${hasTests ? `
       - name: Run tests
-        run: pytest --tb=short -v
+        run: pytest --tb=short -v` : `
+      # - name: Run tests
+      #   run: pytest --tb=short -v`}
 `
     }
   ];
 }
 
 // ── Rust ──────────────────────────────────────────────────────────────────────
-function generateRustWorkflows(branch: string): GeneratedWorkflow[] {
+function generateRustWorkflows(branch: string, hasTests: boolean): GeneratedWorkflow[] {
   return [
     {
       filename: "ci.yml",
@@ -169,9 +173,11 @@ jobs:
 
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
-
+${hasTests ? `
       - name: Run tests
-        run: cargo test --all-features
+        run: cargo test --all-features` : `
+      # - name: Run tests
+      #   run: cargo test --all-features`}
 
       - name: Check (no build artifacts)
         run: cargo check --all-targets
@@ -181,7 +187,7 @@ jobs:
 }
 
 // ── Go ────────────────────────────────────────────────────────────────────────
-function generateGoWorkflows(branch: string): GeneratedWorkflow[] {
+function generateGoWorkflows(branch: string, hasTests: boolean): GeneratedWorkflow[] {
   return [
     {
       filename: "ci.yml",
@@ -213,12 +219,14 @@ jobs:
         run: go vet ./...
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v3
         with:
           version: latest
-
-      - name: Test with race detection
-        run: go test -race -coverprofile=coverage.out ./...
+${hasTests ? `
+      - name: Run tests
+        run: go test -v -race ./...` : `
+      # - name: Run tests
+      #   run: go test -v -race ./...`}
 
       - name: Build
         run: go build ./...
@@ -228,7 +236,7 @@ jobs:
 }
 
 // ── Java ──────────────────────────────────────────────────────────────────────
-function generateJavaWorkflows(branch: string): GeneratedWorkflow[] {
+function generateJavaWorkflows(branch: string, hasTests: boolean): GeneratedWorkflow[] {
   return [
     {
       filename: "ci.yml",
@@ -257,15 +265,20 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and Test
-        run: mvn --batch-mode --update-snapshots verify
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+${hasTests ? `
+      - name: Run tests
+        run: mvn test` : `
+      # - name: Run tests
+      #   run: mvn test`}
 `
     }
   ];
 }
 
-// ── Generic ───────────────────────────────────────────────────────────────────
-function generateGenericWorkflow(branch: string): GeneratedWorkflow[] {
+// ── Generic / Unknown ─────────────────────────────────────────────────────────
+function generateGenericWorkflow(branch: string, hasTests: boolean): GeneratedWorkflow[] {
   return [
     {
       filename: "ci.yml",

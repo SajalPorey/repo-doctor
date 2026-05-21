@@ -217,7 +217,13 @@ export default function ReportDashboard({ data }: { data: ScanResponse }) {
             ) : (
               <div className="grid gap-4">
                 {failedChecks.map((check) => (
-                  <SuggestionCard key={`${check.categoryName}-${check.id}`} check={check} />
+                  <SuggestionCard
+                    key={`${check.categoryName}-${check.id}`}
+                    check={check}
+                    owner={data.owner}
+                    repoName={data.repoName}
+                    defaultBranch={data.defaultBranch}
+                  />
                 ))}
               </div>
             )}

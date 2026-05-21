@@ -42,14 +42,18 @@ export default function ActionsGenerator({
   hasCi,
   hasTests,
 }: ActionsGeneratorProps) {
-  const workflows = generateWorkflows(techStack, defaultBranch);
+  const workflows = generateWorkflows(techStack, defaultBranch, hasTests);
   const testingGuide = getTestingGuide(techStack);
   const [selected, setSelected] = useState(0);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showTestGuide, setShowTestGuide] = useState(false);
   const workflow = workflows[selected];
+  
+  // Prevent "file already exists" error on GitHub if repo already has CI
+  const [uniqueId] = useState(() => Math.random().toString(36).substring(2, 7));
+  const actualFilename = hasCi ? `repodoctor-${uniqueId}-${workflow.filename}` : workflow.filename;
 
-  const githubNewFileUrl = `https://github.com/${owner}/${repoName}/new/${defaultBranch}?filename=.github/workflows/${workflow.filename}&value=${encodeURIComponent(workflow.yaml)}`;
+  const githubNewFileUrl = `https://github.com/${owner}/${repoName}/new/${defaultBranch}?filename=.github/workflows/${actualFilename}&value=${encodeURIComponent(workflow.yaml)}`;
 
   const stackLabel: Record<TechStack, string> = {
     typescript: "🟦 TypeScript",

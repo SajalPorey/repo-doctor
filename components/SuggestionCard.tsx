@@ -4,9 +4,19 @@ interface SuggestionCardProps {
   check: RepoCheck & {
     categoryName: CategoryName;
   };
+  owner?: string;
+  repoName?: string;
+  defaultBranch?: string;
 }
 
-export default function SuggestionCard({ check }: SuggestionCardProps) {
+export default function SuggestionCard({ check, owner, repoName, defaultBranch }: SuggestionCardProps) {
+  const { autoFix } = check.suggestion;
+  
+  const githubNewFileUrl =
+    autoFix && owner && repoName
+      ? `https://github.com/${owner}/${repoName}/new/${defaultBranch || "main"}?filename=${autoFix.filename}&value=${encodeURIComponent(autoFix.content)}`
+      : null;
+
   return (
     <article className="rounded-lg border border-zinc-200 bg-white/80 p-5 transition hover:border-violet-500/40 dark:border-zinc-800 dark:bg-zinc-900/80">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -41,6 +51,22 @@ export default function SuggestionCard({ check }: SuggestionCardProps) {
           {check.suggestion.example}
         </pre>
       ) : null}
+
+      {githubNewFileUrl && (
+        <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+          <a
+            href={githubNewFileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-md bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-600 transition hover:bg-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500/30"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            1-Click PR (Auto-Fix)
+          </a>
+        </div>
+      )}
     </article>
   );
 }

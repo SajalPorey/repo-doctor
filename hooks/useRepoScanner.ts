@@ -6,6 +6,7 @@ import {
   isGitHubApiError
 } from "@/lib/github";
 import { buildScanResult } from "@/lib/score";
+import { fetchOsvVulnerabilities } from "@/lib/osv";
 import { addScanToHistory } from "@/hooks/useScanHistory";
 import type { ScanResponse, PackageJson } from "@/types/scan";
 
@@ -54,6 +55,18 @@ export function useRepoScanner() {
         techStack: "other", // detected & overridden by buildScanResult via detector
         repoType: "unknown" // detected & overridden by buildScanResult via detector
       });
+
+      // 4.5 Check OSV Vulnerabilities
+      if (packageJsonContent) {
+        const osvRisks = await fetchOsvVulnerabilities(packageJsonContent);
+        if (osvRisks.length > 0) {
+          scanResult.risks.push(...osvRisks);
+          
+          // Optionally adjust score based on high severity vulnerabilities
+          const penalty = osvRisks.length * 10;
+          scanResult.totalScore = Math.max(0, scanResult.totalScore - penalty);
+        }
+      }
 
       setResult(scanResult);
 

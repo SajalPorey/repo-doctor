@@ -12,7 +12,11 @@ export function scanHygiene(context: ScanContext): CategoryResult {
       suggestion: {
         why: ".gitignore prevents build output, dependencies, and secrets from being committed.",
         fix: "Add a .gitignore that matches your language and framework.",
-        example: "node_modules\n.env\n.next"
+        example: "node_modules\n.env\n.next",
+        autoFix: {
+          filename: ".gitignore",
+          content: "node_modules/\n.env\n.DS_Store\ndist/\nbuild/"
+        }
       }
     },
     {
