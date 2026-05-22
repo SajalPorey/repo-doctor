@@ -17,8 +17,8 @@ export function scanTesting(context: ScanContext): CategoryResult {
     genericChecks.push({
       id: "test-folder-exists",
       label: "Test folder exists",
-      passed: paths.some(hasTestFolderSegment),
-      points: 5,
+      passed: context.techStack === "html" || context.repoType === "docs-only" || paths.some(hasTestFolderSegment),
+      points: context.techStack === "html" || context.repoType === "docs-only" ? 0 : 5,
       suggestion: {
         why: "A clear test folder makes the project easier to verify and extend.",
         fix: isPython
@@ -34,8 +34,8 @@ export function scanTesting(context: ScanContext): CategoryResult {
     genericChecks.push({
       id: "test-files-exist",
       label: "Test files exist (*.test.ts / *.spec.ts)",
-      passed: paths.some(isJsTestFile),
-      points: 5,
+      passed: context.techStack === "html" || paths.some(isJsTestFile),
+      points: context.techStack === "html" ? 0 : 5,
       suggestion: {
         why: "Test files prove important behavior is covered.",
         fix: "Add test files matching *.test.ts, *.spec.ts, *.test.js, or *.spec.js.",
@@ -47,8 +47,8 @@ export function scanTesting(context: ScanContext): CategoryResult {
     genericChecks.push({
       id: "package-test-script",
       label: "package.json has a real test script",
-      passed: hasUsefulTestScript(scripts),
-      points: 5,
+      passed: context.techStack === "html" || hasUsefulTestScript(scripts),
+      points: context.techStack === "html" ? 0 : 5,
       suggestion: {
         why: "A test script gives contributors and CI one reliable command.",
         fix: "Add a test script in package.json.",
@@ -82,5 +82,7 @@ function isJsTestFile(path: string): boolean {
 
 function hasUsefulTestScript(scripts: Record<string, string>): boolean {
   const testScript = scripts.test;
-  return Boolean(testScript && !/no test specified/i.test(testScript));
+  if (!testScript) return false;
+  const trimmed = testScript.trim();
+  return !/no test specified/i.test(trimmed) && !/^echo\b/i.test(trimmed) && trimmed !== "";
 }

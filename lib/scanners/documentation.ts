@@ -8,7 +8,7 @@ export function scanDocumentation(context: ScanContext): CategoryResult {
     {
       id: "readme-exists",
       label: "README.md exists",
-      passed: paths.includes("readme.md"),
+      passed: paths.includes("readme.md") && readme.length > 20,
       points: 5,
       suggestion: {
         why: "A README is the front door of a repository and explains what the project does.",
@@ -19,7 +19,7 @@ export function scanDocumentation(context: ScanContext): CategoryResult {
     {
       id: "readme-install-steps",
       label: "README has install steps",
-      passed: /\b(install|npm|yarn|pip)\b/i.test(readme),
+      passed: /\b(install|npm|yarn|pip|setup|run|open index\.html)\b/i.test(readme),
       points: 4,
       suggestion: {
         why: "Contributors will not know how to run your project locally.",
@@ -55,8 +55,8 @@ export function scanDocumentation(context: ScanContext): CategoryResult {
     {
       id: "contributing-exists",
       label: "CONTRIBUTING.md exists",
-      passed: hasAnyPath(paths, ["contributing.md", ".github/contributing.md"]),
-      points: 4,
+      passed: paths.length < 10 || hasAnyPath(paths, ["contributing.md", ".github/contributing.md"]),
+      points: paths.length < 10 ? 0 : 4,
       suggestion: {
         why: "Contribution guidelines make collaboration easier and reduce maintainer overhead.",
         fix: "Add CONTRIBUTING.md with setup, branch, commit, and pull request guidelines.",
@@ -66,13 +66,13 @@ export function scanDocumentation(context: ScanContext): CategoryResult {
     {
       id: "issue-pr-templates",
       label: "Issue or PR templates exist",
-      passed: hasAnyPath(paths, [
+      passed: paths.length < 10 || hasAnyPath(paths, [
         ".github/issue_template.md",
         ".github/pull_request_template.md",
         "issue_template.md",
         "pull_request_template.md"
       ]) || paths.some(p => p.startsWith(".github/issue_template/") || p.startsWith(".github/pull_request_template/")),
-      points: 3,
+      points: paths.length < 10 ? 0 : 3,
       suggestion: {
         why: "Templates guide contributors to provide necessary information, making issues and PRs actionable.",
         fix: "Create an ISSUE_TEMPLATE.md and PULL_REQUEST_TEMPLATE.md in a .github/ folder.",

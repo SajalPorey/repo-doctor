@@ -64,7 +64,7 @@ export function scanRisks(context: ScanContext): RiskItem[] {
 
   // No .gitignore at all
   const hasGitignore = paths.includes(".gitignore");
-  if (!hasGitignore) {
+  if (!hasGitignore && context.techStack !== "html" && context.repoType !== "docs-only") {
     risks.push({
       id: "no-gitignore",
       severity: "high",
@@ -108,7 +108,7 @@ export function scanRisks(context: ScanContext): RiskItem[] {
       p === ".gitlab-ci.yml" ||
       p === "Jenkinsfile"
   );
-  if (!hasCi) {
+  if (!hasCi && context.techStack !== "html" && context.repoType !== "docs-only") {
     risks.push({
       id: "no-ci",
       severity: "medium",
@@ -146,14 +146,12 @@ export function scanRisks(context: ScanContext): RiskItem[] {
   // Solo project with no tests is risky
   const hasTests = paths.some(
     (p) =>
-      p.includes("test") ||
-      p.includes("spec") ||
-      p.endsWith("_test.go") ||
-      p.endsWith("_test.py") ||
-      p.endsWith("_test.rs")
+      p.match(/\btests?\//i) ||
+      p.match(/\.(test|spec)\.(ts|js|jsx|tsx)$/i) ||
+      p.match(/_test\.(go|py|rs|rb)$/i) ||
+      p.match(/^test_.*\.py$/i)
   );
-  const stars = (context as any).stars ?? 0; // stars not in ScanContext but won't cause error
-  if (!hasTests) {
+  if (!hasTests && context.techStack !== "html" && context.repoType !== "docs-only") {
     risks.push({
       id: "no-tests-risky-merge",
       severity: "medium",

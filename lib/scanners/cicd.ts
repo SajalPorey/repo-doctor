@@ -13,8 +13,8 @@ export function scanCiCd(context: ScanContext): CategoryResult {
     {
       id: "github-workflows-dir",
       label: ".github/workflows directory exists",
-      passed: hasWorkflowDirectory,
-      points: 8,
+      passed: context.techStack === "html" || context.repoType === "docs-only" || hasWorkflowDirectory,
+      points: context.techStack === "html" || context.repoType === "docs-only" ? 0 : 8,
       suggestion: {
         why: "A workflows directory is the standard place for GitHub Actions automation.",
         fix: "Create .github/workflows and add a CI workflow file.",
@@ -24,8 +24,8 @@ export function scanCiCd(context: ScanContext): CategoryResult {
     {
       id: "github-workflow-files",
       label: "Workflow files exist",
-      passed: hasWorkflowFiles,
-      points: 7,
+      passed: context.techStack === "html" || context.repoType === "docs-only" || hasWorkflowFiles,
+      points: context.techStack === "html" || context.repoType === "docs-only" ? 0 : 7,
       suggestion: {
         why: "Without automated checks, bugs can slip into the main branch easily.",
         fix: "Create .github/workflows/ci.yml with build and test steps.",

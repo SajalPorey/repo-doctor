@@ -22,8 +22,8 @@ export function scanCodeQuality(context: ScanContext): CategoryResult {
         },
         {
           id: "eslint-config-exists",
-          label: "ESLint config exists",
-          passed: hasEslintConfig(paths, context.packageJson),
+          label: "Linter config exists (ESLint, Biome, Deno)",
+          passed: hasEslintConfig(paths, context.packageJson) || hasModernTools(paths),
           points: 5,
           suggestion: {
             why: "Linting catches common bugs and keeps code style consistent.",
@@ -33,8 +33,8 @@ export function scanCodeQuality(context: ScanContext): CategoryResult {
         },
         {
           id: "prettier-config-exists",
-          label: "Prettier config exists",
-          passed: hasPrettierConfig(paths, context.packageJson),
+          label: "Formatter config exists (Prettier, Biome, Deno)",
+          passed: hasPrettierConfig(paths, context.packageJson) || hasModernTools(paths),
           points: 5,
           suggestion: {
             why: "Formatting rules reduce noisy diffs and style debates in code review.",
@@ -98,4 +98,8 @@ function hasPrettierConfig(paths: string[], packageJson: ScanContext["packageJso
         path === "prettier.config.cjs"
     ) || Boolean(packageJson?.prettier)
   );
+}
+
+function hasModernTools(paths: string[]): boolean {
+  return paths.some(p => p === "biome.json" || p === "biome.jsonc" || p === "deno.json" || p === "deno.jsonc");
 }

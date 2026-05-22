@@ -33,6 +33,7 @@ const STACK_LABELS: Record<TechStack, string> = {
   java: "☕ Java",
   ruby: "💎 Ruby",
   php: "🐘 PHP",
+  html: "🌐 HTML",
   other: "📝 Other",
 };
 
