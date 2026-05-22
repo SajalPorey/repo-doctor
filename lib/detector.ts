@@ -1,7 +1,7 @@
 import type { PackageJson } from "@/types/scan";
 
 export type RepoType = "library" | "web-app" | "cli-tool" | "research" | "monorepo" | "docs-only" | "unknown";
-export type TechStack = "typescript" | "javascript" | "python" | "go" | "rust" | "java" | "ruby" | "php" | "other";
+export type TechStack = "typescript" | "javascript" | "python" | "go" | "rust" | "java" | "ruby" | "php" | "html" | "other";
 export type MaturityLevel = "hobby" | "growing" | "production";
 
 export interface RepoContext {
@@ -67,8 +67,16 @@ export function detectTechStack(paths: string[]): TechStack {
   if (paths.some((p) => ["pom.xml", "build.gradle", "build.gradle.kts"].includes(p))) return "java";
   if (paths.includes("Gemfile")) return "ruby";
   if (paths.includes("composer.json")) return "php";
+  
+  const hasPackageJson = paths.includes("package.json");
   if (paths.includes("tsconfig.json") || paths.some((p) => p.endsWith(".ts") || p.endsWith(".tsx"))) return "typescript";
-  if (paths.some((p) => p.endsWith(".js") || p.endsWith(".jsx") || p.endsWith(".mjs"))) return "javascript";
+  if (hasPackageJson || paths.some((p) => p.endsWith(".jsx") || p.endsWith(".mjs"))) return "javascript";
+  if (paths.some((p) => p.endsWith(".js") && !hasPackageJson)) {
+      // If it's just a raw .js file but has .html, treat as html
+      if (paths.some(p => p.endsWith(".html"))) return "html";
+      return "javascript";
+  }
+  if (paths.some((p) => p.endsWith(".html") || p.endsWith(".css"))) return "html";
   return "other";
 }
 

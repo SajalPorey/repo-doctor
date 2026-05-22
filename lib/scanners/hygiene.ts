@@ -7,8 +7,8 @@ export function scanHygiene(context: ScanContext): CategoryResult {
     {
       id: "gitignore-exists",
       label: ".gitignore exists",
-      passed: paths.includes(".gitignore"),
-      points: 5,
+      passed: context.techStack === "html" || context.repoType === "docs-only" || paths.includes(".gitignore"),
+      points: context.techStack === "html" || context.repoType === "docs-only" ? 0 : 5,
       suggestion: {
         why: ".gitignore prevents build output, dependencies, and secrets from being committed.",
         fix: "Add a .gitignore that matches your language and framework.",
@@ -21,9 +21,9 @@ export function scanHygiene(context: ScanContext): CategoryResult {
     },
     {
       id: "src-folder-exists",
-      label: "src folder exists",
-      passed: paths.some((path) => path.startsWith("src/")),
-      points: 3,
+      label: "src folder or equivalent exists",
+      passed: context.techStack === "html" || paths.some((path) => path.startsWith("src/") || path.startsWith("app/") || path.startsWith("pages/") || path.startsWith("cmd/")),
+      points: context.techStack === "html" ? 0 : 3,
       suggestion: {
         why: "A src folder keeps application code separate from configuration and documentation.",
         fix: "Move application source files into a src directory when it fits the project.",
