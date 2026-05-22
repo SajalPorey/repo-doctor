@@ -84,11 +84,31 @@ function patchManifest() {
   console.log('Patched manifest.json with clean CSP (no hashes).');
 }
 
+// ── 5. Remove all files/directories starting with an underscore ───────────────
+function removeUnderscoreFiles(dir) {
+  for (const file of fs.readdirSync(dir)) {
+    const fullPath = path.join(dir, file);
+    if (file.startsWith('_')) {
+      console.log(`Removing forbidden file/dir: ${file}`);
+      if (fs.statSync(fullPath).isDirectory()) {
+        fs.rmSync(fullPath, { recursive: true, force: true });
+      } else {
+        fs.unlinkSync(fullPath);
+      }
+    } else if (fs.statSync(fullPath).isDirectory()) {
+      removeUnderscoreFiles(fullPath);
+    }
+  }
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 (function main() {
   renameNextDir();
+  removeUnderscoreFiles(outDir);
   replaceAllReferences();
   extractAllInlineScripts();
   patchManifest();
   console.log('\n✅ Extension build ready in out/');
 })();
+
+
