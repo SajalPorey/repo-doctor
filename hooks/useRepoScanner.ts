@@ -96,5 +96,11 @@ export function useRepoScanner() {
     }
   };
 
-  return { scanRepo, loading, error, result };
+  const resetScanner = () => {
+    setLoading(false);
+    setError(null);
+    setResult(null);
+  };
+
+  return { scanRepo, loading, error, result, resetScanner };
 }

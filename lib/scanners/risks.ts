@@ -48,7 +48,7 @@ export function scanRisks(context: ScanContext): RiskItem[] {
   }
 
   // Exposed Secrets (Private Keys, AWS)
-  const hasPrivateKeys = paths.some((p) => p.endsWith(".pem") || p.endsWith(".key") || p === "id_rsa" || p === "id_rsa.pub" === false && p.includes("id_rsa"));
+  const hasPrivateKeys = paths.some((p) => p.endsWith(".pem") || p.endsWith(".key") || p === "id_rsa" || (p !== "id_rsa.pub" && p.includes("id_rsa")));
   const hasAwsKeys = paths.some((p) => p.includes(".aws/credentials") || p === "aws_credentials" || p.includes("client_secret.json"));
   
   if (hasPrivateKeys || hasAwsKeys) {
@@ -149,7 +149,7 @@ export function scanRisks(context: ScanContext): RiskItem[] {
       p.match(/\btests?\//i) ||
       p.match(/\.(test|spec)\.(ts|js|jsx|tsx)$/i) ||
       p.match(/_test\.(go|py|rs|rb)$/i) ||
-      p.match(/^test_.*\.py$/i)
+      p.match(/(^|\/)test_[^/]+\.py$/i)
   );
   if (!hasTests && context.techStack !== "html" && context.repoType !== "docs-only") {
     risks.push({

@@ -77,6 +77,15 @@ export function detectTechStack(paths: string[]): TechStack {
       return "javascript";
   }
   if (paths.some((p) => p.endsWith(".html") || p.endsWith(".css"))) return "html";
+
+  // Fallbacks based on file extensions for repositories without package/build configuration files
+  if (paths.some((p) => p.endsWith(".py") || p.endsWith(".ipynb"))) return "python";
+  if (paths.some((p) => p.endsWith(".rs"))) return "rust";
+  if (paths.some((p) => p.endsWith(".go"))) return "go";
+  if (paths.some((p) => p.endsWith(".java"))) return "java";
+  if (paths.some((p) => p.endsWith(".rb"))) return "ruby";
+  if (paths.some((p) => p.endsWith(".php"))) return "php";
+
   return "other";
 }
 

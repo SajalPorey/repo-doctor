@@ -68,7 +68,7 @@ export function scanCodeQuality(context: ScanContext): CategoryResult {
 
   return {
     name: "Code Quality",
-    maxScore: maxScore || 20,
+    maxScore,
     score: checks.reduce((total, check) => total + (check.passed ? check.points : 0), 0),
     checks
   };

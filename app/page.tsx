@@ -10,7 +10,7 @@ import { useRepoScanner } from "@/hooks/useRepoScanner";
 import { resetOctokit } from "@/lib/github";
 
 export default function HomePage() {
-  const { scanRepo, loading, error, result } = useRepoScanner();
+  const { scanRepo, loading, error, result, resetScanner } = useRepoScanner();
   const [initialUrl, setInitialUrl] = useState<string>("");
   const [showSettings, setShowSettings] = useState(false);
   const [token, setToken] = useState("");
@@ -113,7 +113,14 @@ export default function HomePage() {
         {result && (
           <div className="animate-in fade-in slide-in-from-bottom-4">
             <button 
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                resetScanner();
+                if (typeof window !== "undefined") {
+                  const url = new URL(window.location.href);
+                  url.search = "";
+                  window.history.replaceState(null, "", url.toString());
+                }
+              }}
               className="mb-4 text-sm text-zinc-400 hover:text-white"
             >
               ← Scan another repo

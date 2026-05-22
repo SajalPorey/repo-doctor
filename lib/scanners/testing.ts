@@ -65,7 +65,7 @@ export function scanTesting(context: ScanContext): CategoryResult {
 
   return {
     name: "Testing",
-    maxScore: maxScore || 15,
+    maxScore,
     score: checks.reduce((total, check) => total + (check.passed ? check.points : 0), 0),
     checks
   };
