@@ -24,7 +24,7 @@ RepoDoctor is a Chrome Extension that automatically appears as a sidebar wheneve
 
 ---
 
-## 📸 How It Works
+## 🚀 Usage & How It Works
 
 1. Open any GitHub repository
 2. The **RepoDoctor sidebar** slides in from the right
@@ -130,7 +130,7 @@ Detects structural risks from the file tree:
 
 | Layer | Tech |
 |---|---|
-| Framework | Next.js 14 (Static Export) |
+| Framework | Next.js 16 (Static Export) |
 | Language | TypeScript |
 | GitHub API | Octokit REST |
 | Styling | Tailwind CSS |
