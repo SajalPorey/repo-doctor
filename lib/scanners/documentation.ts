@@ -30,7 +30,7 @@ export function scanDocumentation(context: ScanContext): CategoryResult {
     {
       id: "readme-usage-section",
       label: "README has usage guidance",
-      passed: /\b(usage|example|how to use)\b/i.test(readme),
+      passed: /\b(usage|example|how to use|getting started|how to run|quickstart|quick start|run locally|development)\b/i.test(readme),
       points: 3,
       suggestion: {
         why: "Usage examples help users understand the project faster.",

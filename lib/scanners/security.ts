@@ -22,7 +22,7 @@ export function scanSecurity(context: ScanContext): CategoryResult {
     checks.push({
       id: "env-example-exists",
       label: ".env.example exists",
-      passed: hasFileNamed(paths, ".env.example"),
+      passed: hasEnvExample(paths),
       points: 4,
       suggestion: {
         why: "New contributors will not know what environment variables are needed.",
@@ -88,6 +88,19 @@ function hasAnyPath(paths: string[], candidates: string[]): boolean {
 
 function hasFileNamed(paths: string[], fileName: string): boolean {
   return paths.some((path) => path.split("/").pop() === fileName);
+}
+
+function hasEnvExample(paths: string[]): boolean {
+  return paths.some((path) => {
+    const fileName = path.split("/").pop();
+    return (
+      fileName === ".env.example" ||
+      fileName === ".env.local.example" ||
+      fileName === ".env.sample" ||
+      fileName === ".env.local.sample" ||
+      fileName === ".env.template"
+    );
+  });
 }
 
 function buildCategory(
