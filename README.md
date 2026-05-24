@@ -14,6 +14,7 @@ RepoDoctor is a Chrome Extension that automatically appears as a sidebar wheneve
 - **Stack-aware checks** — Python, Rust, Go, TypeScript, and JavaScript specific checks
 - **Maturity-calibrated scoring** — Adjusts expectations based on age, stars, and forks
 - **🔴 Risk Warnings** — Detects dangerous patterns (committed `.env`, missing `.gitignore`, DB migrations on main, lockfile conflicts, and more)
+- **🔒 Dependency Vulnerability Scan (OSV)** — Batch queries the open OSV.dev database to flag known security vulnerabilities in your `package.json` dependencies with score deduction penalties
 - **📘 Contribute Guide** — Auto-generated step-by-step git workflow with copy-able, repo-specific commands
 - **🛠️ Actions Generator** — 1-click CI/CD workflow generator based on repo's tech stack (TypeScript, Python, Rust, Go, etc.)
 - **Scan History** — Remembers your last 20 scanned repos locally for quick re-checks
@@ -63,6 +64,12 @@ npm install
 # 3. Build the extension
 npm run build
 # Creates the `out/` folder — your extension bundle
+
+# 4. Bundle into a zip file (optional)
+npm run bundle
+# Or run build + bundle in one go:
+npm run build:ext
+# Creates `repodoctor-extension.zip` in the root directory
 ```
 
 Then load into Chrome:
@@ -70,7 +77,7 @@ Then load into Chrome:
 1. Open `chrome://extensions/`
 2. Enable **Developer mode** (top right toggle)
 3. Click **Load unpacked**
-4. Select the `out/` folder inside this project
+4. Select the `out/` folder inside this project (or unzip the bundled extension and load it)
 5. Visit any GitHub repo — the sidebar will appear automatically!
 
 ---
@@ -150,7 +157,7 @@ repodoctor/
 │   ├── ReportDashboard.tsx       # Full scan results with tabs
 │   ├── RiskWarnings.tsx          # 🔴 Risk warning cards
 │   ├── ContributeGuide.tsx       # 📘 Step-by-step contribute guide
-│   ├── ActionsGenerator.tsx      # 🛠️ GitHub Actions workflow generator
+│   ├── ActionsGenerator.tsx      # 🛠️ Actions workflow generator
 │   ├── ScanHistory.tsx           # Scan history list
 │   ├── RepoUrlForm.tsx           # URL input form
 │   ├── ScoreCard.tsx             # Overall score display
@@ -163,6 +170,7 @@ repodoctor/
 │   ├── github.ts                 # Octokit wrapper (browser-compatible)
 │   ├── detector.ts               # Repo type, stack & maturity detection
 │   ├── score.ts                  # Weighted score aggregation
+│   ├── osv.ts                    # npm dependency vulnerability checker (OSV API)
 │   ├── actionsGenerator.ts       # CI/CD workflow template generation
 │   └── scanners/
 │       ├── cicd.ts               # CI/CD checks
@@ -176,6 +184,10 @@ repodoctor/
 ├── public/
 │   ├── content.js                # Injects sidebar on GitHub pages
 │   └── manifest.json             # Chrome Extension manifest (MV3)
+├── scripts/
+│   └── bundle-extension.js       # Node script to package out/ folder into a zip
+├── tests/
+│   └── example.test.ts           # Unit tests setup (Vitest)
 ├── rename-next.js                # Post-build: renames _next/, extracts scripts for CSP
 └── out/                          # Built extension (load this into Chrome)
 ```
