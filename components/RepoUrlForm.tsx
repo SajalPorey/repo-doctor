@@ -51,7 +51,7 @@ export default function RepoUrlForm({ initialUrl = "", loading, error: externalE
   return (
     <div className="w-full">
       <form
-        className="rounded-lg border border-zinc-800 bg-zinc-950/80 p-3 shadow-2xl shadow-black/30 backdrop-blur"
+        className="rounded-lg border border-zinc-200 bg-white/80 p-3 shadow-2xl shadow-zinc-200/50 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-black/30"
         onSubmit={(event) => {
           event.preventDefault();
           handleSubmit();
@@ -69,29 +69,29 @@ export default function RepoUrlForm({ initialUrl = "", loading, error: externalE
               if (localError) setLocalError("");
             }}
             placeholder="https://github.com/owner/repo"
-            className="min-h-12 w-full rounded-md border border-zinc-800 bg-zinc-900 px-4 font-mono text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/50"
+            className="min-h-12 w-full rounded-md border border-zinc-200 bg-zinc-50 px-4 font-mono text-sm text-zinc-900 outline-none transition placeholder:text-zinc-450 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-600"
             disabled={loading}
           />
           <button
             type="submit"
             disabled={!canSubmit}
-            className="min-h-12 w-full rounded-md bg-violet-500 px-6 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
+            className="min-h-12 w-full rounded-md bg-violet-500 px-6 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500"
           >
             {loading ? "Scanning..." : "Scan Repo"}
           </button>
         </div>
-        {error ? <p className="mt-3 text-sm text-red-400">{error}</p> : null}
+        {error ? <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p> : null}
       </form>
 
       {loading && (
-        <div className="mt-4 rounded-lg border border-zinc-800 bg-zinc-900/70 p-4">
+        <div className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50/70 p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
           <div className="mb-3 flex items-center justify-between">
-            <div className="h-4 w-32 animate-pulse rounded bg-zinc-800" />
+            <div className="h-4 w-32 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
           </div>
           <div className="space-y-2">
-            <div className="h-3 w-full animate-pulse rounded bg-zinc-800" />
-            <div className="h-3 w-5/6 animate-pulse rounded bg-zinc-800" />
-            <div className="h-3 w-2/3 animate-pulse rounded bg-zinc-800" />
+            <div className="h-3 w-full animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-3 w-5/6 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-3 w-2/3 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
           </div>
         </div>
       )}

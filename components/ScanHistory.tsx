@@ -14,9 +14,9 @@ function timeAgo(isoString: string): string {
 }
 
 function scoreColor(score: number): string {
-  if (score >= 80) return "text-emerald-400";
-  if (score >= 60) return "text-amber-400";
-  return "text-red-400";
+  if (score >= 80) return "text-emerald-600 dark:text-emerald-400";
+  if (score >= 60) return "text-amber-600 dark:text-amber-400";
+  return "text-red-600 dark:text-red-400";
 }
 
 function scoreBg(score: number): string {
@@ -62,7 +62,7 @@ export default function ScanHistory({ onRescan }: ScanHistoryProps) {
         {history.map((entry) => (
           <div
             key={`${entry.owner}/${entry.repoName}`}
-            className="group flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-3 transition hover:border-zinc-700"
+            className="group flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50/60 px-3 py-3 transition hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:border-zinc-700"
           >
             {/* Score badge */}
             <div
@@ -71,23 +71,23 @@ export default function ScanHistory({ onRescan }: ScanHistoryProps) {
               <span className={`text-base font-bold leading-none ${scoreColor(entry.score)}`}>
                 {entry.score}
               </span>
-              <span className="text-xs text-zinc-600 mt-0.5">/100</span>
+              <span className="text-xs text-zinc-500 mt-0.5">/100</span>
             </div>
 
             {/* Repo info */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate font-mono">
+              <p className="text-sm font-medium text-zinc-900 dark:text-white truncate font-mono">
                 <span className="text-zinc-500">{entry.owner}/</span>
                 {entry.repoName}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-xs text-zinc-500">{entry.language}</span>
                 <span className="text-zinc-700">·</span>
-                <span className="text-xs text-zinc-600">{timeAgo(entry.scannedAt)}</span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-650">{timeAgo(entry.scannedAt)}</span>
                 {entry.repoType !== "unknown" && (
                   <>
                     <span className="text-zinc-700">·</span>
-                    <span className="text-xs text-zinc-600">{entry.repoType}</span>
+                    <span className="text-xs text-zinc-550 dark:text-zinc-600">{entry.repoType}</span>
                   </>
                 )}
               </div>
@@ -96,7 +96,7 @@ export default function ScanHistory({ onRescan }: ScanHistoryProps) {
             {/* Re-scan button */}
             <button
               onClick={() => onRescan(entry.owner, entry.repoName)}
-              className="flex-shrink-0 rounded-md border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400 opacity-0 group-hover:opacity-100 transition hover:border-violet-500/50 hover:text-violet-300"
+              className="flex-shrink-0 rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs text-zinc-600 opacity-0 group-hover:opacity-100 transition hover:border-violet-500/50 hover:text-violet-650 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:border-violet-500/50 dark:hover:text-violet-300"
             >
               Re-scan
             </button>
@@ -104,7 +104,7 @@ export default function ScanHistory({ onRescan }: ScanHistoryProps) {
         ))}
       </div>
 
-      <p className="text-center text-xs text-zinc-700">
+      <p className="text-center text-xs text-zinc-400 dark:text-zinc-600">
         Last {history.length} scans · stored locally
       </p>
     </div>

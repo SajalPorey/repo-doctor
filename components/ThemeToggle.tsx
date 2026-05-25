@@ -5,12 +5,18 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  React.useEffect(() => {
+    if (mounted && resolvedTheme) {
+      window.parent.postMessage({ type: "repodoctor:theme", theme: resolvedTheme }, "*");
+    }
+  }, [resolvedTheme, mounted]);
 
   if (!mounted) {
     return <div className="h-9 w-9" />; // Placeholder to avoid layout shift

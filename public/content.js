@@ -15,6 +15,8 @@
 
   const SIDEBAR_WIDTH = '400px';
 
+  let isDarkTheme = true;
+
   // ── Sidebar container ────────────────────────────────────────────────────
   const sidebar = document.createElement('div');
   sidebar.id = 'repodoctor-sidebar';
@@ -63,8 +65,14 @@
     border-radius: 4px;
     transition: color 0.2s, background 0.2s;
   `;
-  closeBtn.onmouseenter = () => { closeBtn.style.color = '#fff'; closeBtn.style.background = '#3f3f46'; };
-  closeBtn.onmouseleave = () => { closeBtn.style.color = '#71717a'; closeBtn.style.background = 'none'; };
+  closeBtn.onmouseenter = () => {
+    closeBtn.style.color = isDarkTheme ? '#fff' : '#09090b';
+    closeBtn.style.background = isDarkTheme ? '#3f3f46' : '#e4e4e7';
+  };
+  closeBtn.onmouseleave = () => {
+    closeBtn.style.color = '#71717a';
+    closeBtn.style.background = 'none';
+  };
 
   header.appendChild(title);
   header.appendChild(closeBtn);
@@ -129,6 +137,19 @@
 
   document.body.appendChild(sidebar);
   document.body.appendChild(toggle);
+
+  // Listen for theme change message from the iframe
+  window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'repodoctor:theme') {
+      isDarkTheme = event.data.theme === 'dark';
+      sidebar.style.background = isDarkTheme ? '#09090b' : '#ffffff';
+      sidebar.style.borderLeft = isDarkTheme ? '1px solid #27272a' : '1px solid #e4e4e7';
+      header.style.background = isDarkTheme ? '#09090b' : '#f4f4f5';
+      header.style.borderBottom = isDarkTheme ? '1px solid #27272a' : '1px solid #e4e4e7';
+      title.style.color = isDarkTheme ? '#a78bfa' : '#7c3aed';
+      iframe.style.background = isDarkTheme ? '#09090b' : '#ffffff';
+    }
+  });
 
   // Auto-open after a short delay so the page settles
   setTimeout(openSidebar, 600);

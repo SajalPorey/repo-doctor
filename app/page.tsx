@@ -58,12 +58,12 @@ export default function HomePage() {
     <main className="flex min-h-screen items-start justify-center p-4">
       <section className="w-full max-w-4xl">
         <div className="mx-auto mb-6 flex items-center justify-between text-center">
-          <div className="inline-flex rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 font-mono text-xs text-violet-300">
+          <div className="inline-flex rounded-full border border-zinc-200 bg-zinc-100 px-3 py-1 font-mono text-xs text-violet-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-violet-300">
             RepoDoctor Extension
           </div>
           <button 
             onClick={() => setShowSettings(!showSettings)}
-            className="text-zinc-400 hover:text-white"
+            className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
             title="Settings"
           >
             ⚙️
@@ -71,9 +71,9 @@ export default function HomePage() {
         </div>
 
         {showSettings && (
-          <div className="mb-6 rounded-lg border border-zinc-800 bg-zinc-900/80 p-4">
-            <h3 className="mb-2 text-sm font-semibold text-white">GitHub Settings</h3>
-            <p className="mb-3 text-xs text-zinc-400">
+          <div className="mb-6 rounded-lg border border-zinc-200 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/80">
+            <h3 className="mb-2 text-sm font-semibold text-zinc-900 dark:text-white">GitHub Settings</h3>
+            <p className="mb-3 text-xs text-zinc-500 dark:text-zinc-400">
               Set a Personal Access Token (PAT) to increase the API rate limit. 
               The token is stored locally in your browser.
             </p>
@@ -83,7 +83,7 @@ export default function HomePage() {
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="ghp_xxxxxxxxxxxx"
-                className="flex-1 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-violet-500"
+                className="flex-1 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
               />
               <button 
                 onClick={saveToken}
@@ -104,7 +104,7 @@ export default function HomePage() {
               onScan={(owner, repo) => scanRepo(owner, repo)} 
             />
             
-            <div className="pt-8 border-t border-zinc-800/60">
+            <div className="pt-8 border-t border-zinc-200 dark:border-zinc-800/60">
               <ScanHistory onRescan={(owner, repo) => scanRepo(owner, repo)} />
             </div>
           </div>
@@ -121,7 +121,7 @@ export default function HomePage() {
                   window.history.replaceState(null, "", url.toString());
                 }
               }}
-              className="mb-4 text-sm text-zinc-400 hover:text-white"
+              className="mb-4 text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
             >
               ← Scan another repo
             </button>
